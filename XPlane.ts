@@ -68,7 +68,7 @@ export class XPlane extends EventEmitter {
         )}`
       );
 
-      const cb = this.#callbackStack.pop();
+      const cb = this.#callbackStack.shift();
 
       if (!cb) {
         this.emit("error", "Can not process message from XPlane Connect");
@@ -116,6 +116,8 @@ export class XPlane extends EventEmitter {
   }
 
   async getDataRef(name: string, format: string) {
+    this.emit("log", `Request DataRef "${name}"`);
+
     const res = await this.#query(
       QueryType.GetDataRef,
       pack(`<BB${name.length}s`, [1, name.length, name])
@@ -127,6 +129,8 @@ export class XPlane extends EventEmitter {
   }
 
   async sendDataRef(name: string, format: string, data: any[]) {
+    this.emit("log", `DataRef "${name}" = ${JSON.stringify(data)}`);
+
     await this.#call(
       QueryType.SendDataRef,
       pack(`<B${name.length}sB${format}`, [
@@ -139,6 +143,8 @@ export class XPlane extends EventEmitter {
   }
 
   async command(name: string) {
+    this.emit("log", `Call command ${name}()`);
+
     await this.#call(
       QueryType.SendCommand,
       pack(`<B${name.length}s`, [name.length, name])
