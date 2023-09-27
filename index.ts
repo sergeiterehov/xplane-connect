@@ -1,6 +1,7 @@
 import { ReadlineParser, SerialPort } from "serialport";
-import { XPlane } from "./XPlane";
-import { C172G430 } from "./C172G430";
+import { XPlane } from "./models/XPlane";
+import { SimC172G430 } from "./models/SimC172G430";
+import { DeviceC72G43 } from "./DeviceC72G43";
 
 // XPlane
 
@@ -8,16 +9,9 @@ const xp = new XPlane();
 
 xp.on("log", console.log);
 
-xp.getDataRef("sim/cockpit/autopilot/heading_mag", "f").then(
-  ([heading]) => console.log("Current heading:", heading),
-  console.error
-);
+// Sim model
 
-// Model
-
-const model = new C172G430(xp);
-
-model.interface.Navigation.ADFHeading.get().then(console.log);
+const sim = new SimC172G430(xp);
 
 // Serial
 
@@ -34,10 +28,6 @@ serial.on("error", (e) => {
   console.log("Serial port error", e);
 });
 
-serial.pipe(new ReadlineParser({ delimiter: "\r\n" })).on("data", (row) => {
-  const newHeading = Number(row);
+// Device
 
-  console.log({ newHeading });
-
-  xp.sendDataRef("sim/cockpit/autopilot/heading_mag", "f", [newHeading]);
-});
+const dev = new DeviceC72G43(sim, serial);

@@ -25,7 +25,7 @@ type TypeByFormat<F extends string> = F extends
 /**
  * Cessna 172 with G430/G530
  */
-export class C172G430 {
+export class SimC172G430 {
   #xp: XPlane;
 
   #makeCommand = (name: string) => {
@@ -78,7 +78,7 @@ export class C172G430 {
   #interface = {
     Avionics: {
       HeadingBug: this.#makeDataRef(
-        "sim/cockpit2/gauges/actuators/airspeed_bug_deg",
+        "sim/cockpit/autopilot/heading_mag",
         "f"
       ),
       DriftAdjust: this.#makeDataRef("sim/cockpit/gyros/dg_drift_vac_deg", "f"),
