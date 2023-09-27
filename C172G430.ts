@@ -22,24 +22,6 @@ type TypeByFormat<F extends string> = F extends
   ? boolean
   : unknown;
 
-const getReader =
-  <T>(xp: XPlane, name: string, format: string) =>
-  async (): Promise<T> => {
-    const result = await xp.getDataRef(name, format);
-
-    if (result.length > 1) {
-      return result as any;
-    }
-
-    return result[0] as any;
-  };
-
-const getWriter =
-  <T>(xp: XPlane, name: string, format: string) =>
-  async (value: T): Promise<void> => {
-    await xp.sendDataRef(name, format, Array.isArray(value) ? value : [value]);
-  };
-
 /**
  * Cessna 172 with G430/G530
  */
@@ -52,12 +34,34 @@ export class C172G430 {
     };
   };
 
+  #getReader =
+    <T>(name: string, format: string) =>
+    async (): Promise<T> => {
+      const result = await this.#xp.getDataRef(name, format);
+
+      if (result.length > 1) {
+        return result as any;
+      }
+
+      return result[0] as any;
+    };
+
+  #getWriter =
+    <T>(name: string, format: string) =>
+    async (value: T): Promise<void> => {
+      await this.#xp.sendDataRef(
+        name,
+        format,
+        Array.isArray(value) ? value : [value]
+      );
+    };
+
   #makeReadonlyDataRef = <F extends string = string, T = TypeByFormat<F>>(
     name: string,
     format: F
   ) => {
     return {
-      get: getReader(this.#xp, name, format),
+      get: this.#getReader(name, format),
     };
   };
 
@@ -66,8 +70,8 @@ export class C172G430 {
     format: F
   ) => {
     return {
-      get: getReader<T>(this.#xp, name, format),
-      set: getWriter<T>(this.#xp, name, format),
+      get: this.#getReader<T>(name, format),
+      set: this.#getWriter<T>(name, format),
     };
   };
 
