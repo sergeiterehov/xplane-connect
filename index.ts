@@ -1,4 +1,4 @@
-import { ReadlineParser, SerialPort } from "serialport";
+import { SerialPort } from "serialport";
 import { XPlane } from "./models/XPlane";
 import { SimC172G430 } from "./models/SimC172G430";
 import { DeviceC72G43 } from "./DeviceC72G43";
