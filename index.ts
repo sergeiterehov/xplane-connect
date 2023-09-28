@@ -1,7 +1,11 @@
-import { SerialPort } from "serialport";
 import { XPlane } from "./models/XPlane";
 import { SimC172G430 } from "./models/SimC172G430";
-import { DeviceC72G43 } from "./DeviceC72G43";
+import { DeviceG43 } from "./devices/DeviceG43";
+import { AppC72G43 } from "./apps/AppC72G43";
+
+// Device
+
+const dev = new DeviceG43("/dev/cu.usbserial-10");
 
 // XPlane
 
@@ -13,21 +17,6 @@ xp.on("log", console.log);
 
 const sim = new SimC172G430(xp);
 
-// Serial
+// App
 
-const serial = new SerialPort({
-  path: "/dev/cu.usbserial-10",
-  baudRate: 115200,
-});
-
-serial.on("open", () => {
-  console.log("Serial Port is opened.");
-});
-
-serial.on("error", (e) => {
-  console.log("Serial port error", e);
-});
-
-// Device
-
-const dev = new DeviceC72G43(sim, serial);
+const app = new AppC72G43(dev, sim);
