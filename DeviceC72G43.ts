@@ -11,8 +11,9 @@ type CommandTypes = {
 
 enum Message {
   EncoderSmallRotate = 1,
-  EncoderSmallPress = 2,
-  EncoderSmallRelease = 3,
+  EncoderSmallButton = 2,
+  EncoderSmallShortPress = 3,
+  EncoderSmallLongPress = 4,
 }
 
 const messageDescriptions: {
@@ -26,10 +27,13 @@ const messageDescriptions: {
       { name: "position", type: Number },
     ],
   },
-  [Message.EncoderSmallPress]: {
+  [Message.EncoderSmallButton]: {
+    event: [{ name: "state", type: Number }],
+  },
+  [Message.EncoderSmallShortPress]: {
     event: [],
   },
-  [Message.EncoderSmallRelease]: {
+  [Message.EncoderSmallLongPress]: {
     event: [],
   },
 };
@@ -76,6 +80,19 @@ export class DeviceC72G43 {
   }> = {
     [Message.EncoderSmallRotate]: (e: { delta: number; position: number }) => {
       console.log("ROTATE", e);
+    },
+    [Message.EncoderSmallShortPress]: () => {
+      console.log("[short]");
+    },
+    [Message.EncoderSmallLongPress]: () => {
+      console.log("[LONG]");
+    },
+    [Message.EncoderSmallButton]: (e: { state: number }) => {
+      if (e.state) {
+        console.log("-> pressed");
+      } else {
+        console.log("<- released");
+      }
     },
   };
 

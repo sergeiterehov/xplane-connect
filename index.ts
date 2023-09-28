@@ -16,8 +16,8 @@ const sim = new SimC172G430(xp);
 // Serial
 
 const serial = new SerialPort({
-  path: "/dev/cu.usbserial-210",
-  baudRate: 9600,
+  path: "/dev/cu.usbserial-10",
+  baudRate: 115200,
 });
 
 serial.on("open", () => {
