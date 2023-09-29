@@ -76,8 +76,12 @@ export class AppC72G43 {
     this.#dev = dev;
     this.#sim = sim;
 
-    this.#dev.on("button_click", ({ button, long }) => {
-      this.#handleKeyboardClick(button, long);
+    this.#dev.on("button_click", ({ button }) => {
+      this.#handleKeyboardClick(button, false);
+    });
+
+    this.#dev.on("button_long_click", ({ button }) => {
+      this.#handleKeyboardClick(button, true);
     });
 
     this.#dev.on("big_encoder_rotate", ({ delta, position }) => {

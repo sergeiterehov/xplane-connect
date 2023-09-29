@@ -62,7 +62,8 @@ const messageDescriptions: {
 interface Events {
   big_encoder_rotate: [{ delta: number; position: number }];
   small_encoder_rotate: [{ delta: number; position: number }];
-  button_click: [{ button: Button; long: boolean }];
+  button_click: [{ button: Button }];
+  button_long_click: [{ button: Button }];
 }
 
 export declare interface DeviceG43 {
@@ -114,10 +115,10 @@ export class DeviceG43 extends EventEmitter {
       this.emit("small_encoder_rotate", e);
     },
     [Message.EncoderSmallShortPress]: () => {
-      this.emit("button_click", { button: Button.Encoder, long: false });
+      this.emit("button_click", { button: Button.Encoder });
     },
     [Message.EncoderSmallLongPress]: () => {
-      this.emit("button_click", { button: Button.Encoder, long: true });
+      this.emit("button_long_click", { button: Button.Encoder });
     },
     [Message.EncoderSmallButton]: (e: { state: number }) => {
       // TODO: not implemented
