@@ -192,13 +192,16 @@ export class AppC72G43 {
           this.#sim.interface.Engine.MagnetosBoth();
         } else if (button === Button.C4_R1) {
           // TODO: starter
+          // FIXME: This is real problem. I have no idea how made it
         } else if (button === Button.C4_R2) {
           // toggle fuel pump
           this.#sim.interface.Engine.FuelPump();
         } else if (button === Button.C4_R3) {
           // TODO: toggle tank selection
+          // Probably need state for this
         } else if (button === Button.C4_R4) {
           // TODO: tank shutoff
+          // For what?
         }
       } else if (this.#layoutSystem === KeyboardSystemLayout.Electro) {
         if (button === Button.Encoder) {
@@ -432,7 +435,7 @@ export class AppC72G43 {
       if (button === Button.Encoder) {
         // NOP
       } else if (button === Button.C2_R1) {
-        // TODO: Trans IDENT
+        // Trans IDENT
         this.#sim.interface.Transponder.IDENT();
       }
       // Sub mode selection
