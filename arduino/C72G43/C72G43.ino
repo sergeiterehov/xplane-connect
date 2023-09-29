@@ -63,18 +63,24 @@ void buttonsMonitor()
   // read the state of the switch/button:
   encoderSmall.btnState = digitalRead(ENCODER_SMALL_BTN);
 
-  if (encoderSmall.btnLastState == HIGH && encoderSmall.btnState == LOW) {
+  if (encoderSmall.btnLastState == HIGH && encoderSmall.btnState == LOW)
+  {
     encoderSmall.pressedTime = millis();
 
     state.encoderSmallButton = true;
-  } else if (encoderSmall.btnLastState == LOW && encoderSmall.btnState == HIGH) {
+  }
+  else if (encoderSmall.btnLastState == LOW && encoderSmall.btnState == HIGH)
+  {
     encoderSmall.releasedTime = millis();
 
     long pressDuration = encoderSmall.releasedTime - encoderSmall.pressedTime;
 
-    if (pressDuration < ShortPressTime) {
+    if (pressDuration < ShortPressTime)
+    {
       state.encoderSmallOnShortPress = true;
-    } else {
+    }
+    else
+    {
       state.encoderSmallOnLongPress = true;
     }
 
@@ -107,7 +113,8 @@ void loop()
 {
   buttonsMonitor();
 
-  if (state.encoderSmallPosition != statePrev.encoderSmallPosition) {
+  if (state.encoderSmallPosition != statePrev.encoderSmallPosition)
+  {
     Serial.print(EncoderSmallRotate);
     Serial.print('\t');
     Serial.print(state.encoderSmallPosition - statePrev.encoderSmallPosition);
@@ -115,19 +122,22 @@ void loop()
     Serial.println(state.encoderSmallPosition);
   }
 
-  if (state.encoderSmallButton != statePrev.encoderSmallButton) {
+  if (state.encoderSmallButton != statePrev.encoderSmallButton)
+  {
     Serial.print(EncoderSmallButton);
     Serial.print('\t');
     Serial.println(state.encoderSmallButton);
   }
 
-  if (state.encoderSmallOnShortPress != statePrev.encoderSmallOnShortPress) {
+  if (state.encoderSmallOnShortPress != statePrev.encoderSmallOnShortPress)
+  {
     Serial.println(EncoderSmallShortPress);
 
     state.encoderSmallOnShortPress = false;
   }
 
-  if (state.encoderSmallOnLongPress != statePrev.encoderSmallOnLongPress) {
+  if (state.encoderSmallOnLongPress != statePrev.encoderSmallOnLongPress)
+  {
     Serial.println(EncoderSmallLongPress);
 
     state.encoderSmallOnLongPress = false;

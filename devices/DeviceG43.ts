@@ -46,27 +46,12 @@ interface Events {
 
 export declare interface DeviceG43 {
   emit<N extends keyof Events>(event: N, ...e: Events[N]): boolean;
-  addListener<N extends keyof Events>(
-    event: N,
-    handler: (...e: Events[N]) => any
-  ): this;
+  addListener<N extends keyof Events>(event: N, handler: (...e: Events[N]) => any): this;
   on<N extends keyof Events>(event: N, handler: (...e: Events[N]) => any): this;
-  once<N extends keyof Events>(
-    event: N,
-    handler: (...e: Events[N]) => any
-  ): this;
-  prependListener<N extends keyof Events>(
-    event: N,
-    handler: (...e: Events[N]) => any
-  ): this;
-  prependOnceListener<N extends keyof Events>(
-    event: N,
-    handler: (...e: Events[N]) => any
-  ): this;
-  removeListener<N extends keyof Events>(
-    event: N,
-    handler: (...e: Events[N]) => any
-  ): this;
+  once<N extends keyof Events>(event: N, handler: (...e: Events[N]) => any): this;
+  prependListener<N extends keyof Events>(event: N, handler: (...e: Events[N]) => any): this;
+  prependOnceListener<N extends keyof Events>(event: N, handler: (...e: Events[N]) => any): this;
+  removeListener<N extends keyof Events>(event: N, handler: (...e: Events[N]) => any): this;
 }
 
 export class DeviceG43 extends EventEmitter {
@@ -75,11 +60,7 @@ export class DeviceG43 extends EventEmitter {
   #parser: ReadlineParser;
 
   #call = (command: Command, ...args: CommandTypes[typeof command]["args"]) => {
-    this.#serial.write(
-      `${command}\t${args
-        .map((val) => String(val).replace("\t", "\\t"))
-        .join("\t")}\n`
-    );
+    this.#serial.write(`${command}\t${args.map((val) => String(val).replace("\t", "\\t")).join("\t")}\n`);
   };
 
   #onMessage = (line: string) => {

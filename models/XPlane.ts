@@ -61,11 +61,7 @@ export class XPlane extends EventEmitter {
     this.#client.on("message", (msg: Buffer) => {
       this.emit(
         "log",
-        `Message: ${msg
-          .toString("hex")
-          .replace(/../g, (c) => c + " ")} ${JSON.stringify(
-          msg.toString("ascii")
-        )}`
+        `Message: ${msg.toString("hex").replace(/../g, (c) => c + " ")} ${JSON.stringify(msg.toString("ascii"))}`,
       );
 
       const cb = this.#callbackStack.shift();
@@ -97,10 +93,7 @@ export class XPlane extends EventEmitter {
   }
 
   async #query(type: QueryType, data: Buffer) {
-    const res = await this.#request(
-      Buffer.concat([pack("<4sx", [type]), data]),
-      true
-    );
+    const res = await this.#request(Buffer.concat([pack("<4sx", [type]), data]), true);
 
     const [resType] = unpack("<4s", res);
 
@@ -118,10 +111,7 @@ export class XPlane extends EventEmitter {
   async getDataRef(name: string, format: string) {
     this.emit("log", `Request DataRef "${name}"`);
 
-    const res = await this.#query(
-      QueryType.GetDataRef,
-      pack(`<BB${name.length}s`, [1, name.length, name])
-    );
+    const res = await this.#query(QueryType.GetDataRef, pack(`<BB${name.length}s`, [1, name.length, name]));
 
     const [resultsLength, rowLength, ...data] = unpack(`<BB${format}`, res);
 
@@ -133,21 +123,13 @@ export class XPlane extends EventEmitter {
 
     await this.#call(
       QueryType.SendDataRef,
-      pack(`<B${name.length}sB${format}`, [
-        name.length,
-        name,
-        data.length,
-        ...data,
-      ])
+      pack(`<B${name.length}sB${format}`, [name.length, name, data.length, ...data]),
     );
   }
 
   async command(name: string) {
     this.emit("log", `Call command ${name}()`);
 
-    await this.#call(
-      QueryType.SendCommand,
-      pack(`<B${name.length}s`, [name.length, name])
-    );
+    await this.#call(QueryType.SendCommand, pack(`<B${name.length}s`, [name.length, name]));
   }
 }

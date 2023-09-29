@@ -49,26 +49,16 @@ export class SimC172G430 {
   #getWriter =
     <T>(name: string, format: string) =>
     async (value: T): Promise<void> => {
-      await this.#xp.sendDataRef(
-        name,
-        format,
-        Array.isArray(value) ? value : [value]
-      );
+      await this.#xp.sendDataRef(name, format, Array.isArray(value) ? value : [value]);
     };
 
-  #makeReadonlyDataRef = <F extends string = string, T = TypeByFormat<F>>(
-    name: string,
-    format: F
-  ) => {
+  #makeReadonlyDataRef = <F extends string = string, T = TypeByFormat<F>>(name: string, format: F) => {
     return {
       get: this.#getReader(name, format),
     };
   };
 
-  #makeDataRef = <F extends string = string, T = TypeByFormat<F>>(
-    name: string,
-    format: F
-  ) => {
+  #makeDataRef = <F extends string = string, T = TypeByFormat<F>>(name: string, format: F) => {
     return {
       get: this.#getReader<T>(name, format),
       set: this.#getWriter<T>(name, format),
@@ -77,74 +67,29 @@ export class SimC172G430 {
 
   #interface = {
     Avionics: {
-      HeadingBug: this.#makeDataRef(
-        "sim/cockpit/autopilot/heading_mag",
-        "f"
-      ),
+      HeadingBug: this.#makeDataRef("sim/cockpit/autopilot/heading_mag", "f"),
       DriftAdjust: this.#makeDataRef("sim/cockpit/gyros/dg_drift_vac_deg", "f"),
-      HorizonAdjust: this.#makeDataRef(
-        "sim/cockpit2/gauges/actuators/artificial_horizon_adjust_deg_pilot",
-        "f"
-      ),
-      BarometerAdjust: this.#makeDataRef(
-        "sim/cockpit2/gauges/indicators/altitude_ft_pilot",
-        "f"
-      ),
+      HorizonAdjust: this.#makeDataRef("sim/cockpit2/gauges/actuators/artificial_horizon_adjust_deg_pilot", "f"),
+      BarometerAdjust: this.#makeDataRef("sim/cockpit2/gauges/indicators/altitude_ft_pilot", "f"),
 
-      Compass: this.#makeReadonlyDataRef(
-        "sim/cockpit2/gauges/indicators/compass_heading_deg_mag",
-        "f"
-      ),
-      Heading: this.#makeReadonlyDataRef(
-        "sim/cockpit2/gauges/indicators/heading_vacuum_deg_mag_pilot",
-        "f"
-      ),
-      AltPressure: this.#makeReadonlyDataRef(
-        "sim/cockpit2/gauges/actuators/barometer_setting_in_hg_pilot",
-        "f"
-      ),
-      AirSpeed: this.#makeReadonlyDataRef(
-        "	sim/cockpit2/gauges/indicators/calibrated_airspeed_kts_pilot",
-        "f"
-      ),
-      VerticalSpeed: this.#makeReadonlyDataRef(
-        "sim/cockpit2/gauges/indicators/vvi_fpm_pilot",
-        "f"
-      ),
-      Slip: this.#makeReadonlyDataRef(
-        "sim/cockpit2/gauges/indicators/slip_deg",
-        "f"
-      ),
-      Roll: this.#makeReadonlyDataRef(
-        "sim/cockpit2/gauges/indicators/roll_vacuum_deg_pilot",
-        "f"
-      ),
-      Pitch: this.#makeReadonlyDataRef(
-        "sim/cockpit2/gauges/indicators/pitch_vacuum_deg_pilot",
-        "f"
-      ),
+      Compass: this.#makeReadonlyDataRef("sim/cockpit2/gauges/indicators/compass_heading_deg_mag", "f"),
+      Heading: this.#makeReadonlyDataRef("sim/cockpit2/gauges/indicators/heading_vacuum_deg_mag_pilot", "f"),
+      AltPressure: this.#makeReadonlyDataRef("sim/cockpit2/gauges/actuators/barometer_setting_in_hg_pilot", "f"),
+      AirSpeed: this.#makeReadonlyDataRef("	sim/cockpit2/gauges/indicators/calibrated_airspeed_kts_pilot", "f"),
+      VerticalSpeed: this.#makeReadonlyDataRef("sim/cockpit2/gauges/indicators/vvi_fpm_pilot", "f"),
+      Slip: this.#makeReadonlyDataRef("sim/cockpit2/gauges/indicators/slip_deg", "f"),
+      Roll: this.#makeReadonlyDataRef("sim/cockpit2/gauges/indicators/roll_vacuum_deg_pilot", "f"),
+      Pitch: this.#makeReadonlyDataRef("sim/cockpit2/gauges/indicators/pitch_vacuum_deg_pilot", "f"),
     },
 
     Navigation: {
       // OBS and ADF
 
-      Nav1: this.#makeDataRef(
-        "sim/cockpit2/radios/indicators/nav1_relative_heading_electric_deg_pilot",
-        "f"
-      ),
-      Nav2: this.#makeDataRef(
-        "sim/cockpit2/radios/indicators/nav2_relative_heading_electric_deg_pilot",
-        "f"
-      ),
-      ADFHeading: this.#makeDataRef(
-        "sim/cockpit2/radios/actuators/adf1_card_heading_deg_mag_pilot",
-        "f"
-      ),
+      Nav1: this.#makeDataRef("sim/cockpit2/radios/indicators/nav1_relative_heading_electric_deg_pilot", "f"),
+      Nav2: this.#makeDataRef("sim/cockpit2/radios/indicators/nav2_relative_heading_electric_deg_pilot", "f"),
+      ADFHeading: this.#makeDataRef("sim/cockpit2/radios/actuators/adf1_card_heading_deg_mag_pilot", "f"),
 
-      ADFBearing: this.#makeReadonlyDataRef(
-        "sim/cockpit2/radios/indicators/adf1_relative_bearing_deg",
-        "f"
-      ),
+      ADFBearing: this.#makeReadonlyDataRef("sim/cockpit2/radios/indicators/adf1_relative_bearing_deg", "f"),
     },
 
     G430: {
