@@ -454,6 +454,54 @@ export class AppC72G43 {
     }
   }
 
+  #handleEncoderRotate(delta: number, position: number, small: boolean) {
+    if (small) {
+      if (this.#encoderSmallMode === EncoderSmallMode.None) {
+        // NOP
+      } else if (this.#encoderSmallMode === EncoderSmallMode.HeadingBug) {
+        // TODO: move heading bug
+      } else if (this.#encoderSmallMode === EncoderSmallMode.GyroCompassAdjust) {
+        // TODO: adjust gyro compass
+      } else if (this.#encoderSmallMode === EncoderSmallMode.OBS2) {
+        // TODO: rotate OBS2
+      } else if (this.#encoderSmallMode === EncoderSmallMode.ADFHeading) {
+        // TODO: rotate ADF heading
+      } else if (this.#encoderSmallMode === EncoderSmallMode.ADFSmall) {
+        // TODO: rotate ADF small
+      } else if (this.#encoderSmallMode === EncoderSmallMode.G530LeftSmall) {
+        // TODO: rotate G530 left small
+      } else if (this.#encoderSmallMode === EncoderSmallMode.G530RightSmall) {
+        // TODO: rotate G530 right small
+      } else if (this.#encoderSmallMode === EncoderSmallMode.G430LeftSmall) {
+        // TODO: rotate G430 left small
+      } else if (this.#encoderSmallMode === EncoderSmallMode.G430RightSmall) {
+        // TODO: rotate G430 right small
+      } else if (this.#encoderSmallMode === EncoderSmallMode.Autopilot) {
+        // TODO: rotate ap vs
+      }
+    } else {
+      if (this.#encoderBigMode === EncoderBigMode.None) {
+        // NOP
+      } else if (this.#encoderBigMode === EncoderBigMode.AltPressure) {
+        // TODO: rotate alt pressure adjust
+      } else if (this.#encoderBigMode === EncoderBigMode.PitchAdjust) {
+        // TODO: rotate pitch adjust
+      } else if (this.#encoderBigMode === EncoderBigMode.OBS1) {
+        // TODO: rotate OBS1
+      } else if (this.#encoderBigMode === EncoderBigMode.ADFBig) {
+        // TODO: rotate ADF big
+      } else if (this.#encoderBigMode === EncoderBigMode.G530LeftBig) {
+        // TODO: rotate G530 left big
+      } else if (this.#encoderBigMode === EncoderBigMode.G530RightBig) {
+        // TODO: rotate G530 right big
+      } else if (this.#encoderBigMode === EncoderBigMode.G430LeftBig) {
+        // TODO: rotate G430 left big
+      } else if (this.#encoderBigMode === EncoderBigMode.G430RightBig) {
+        // TODO: rotate G430 right big
+      }
+    }
+  }
+
   #selectLayout(layout: KeyboardLayout) {
     this.#layout = layout;
 
