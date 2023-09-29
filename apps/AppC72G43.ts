@@ -132,7 +132,9 @@ export class AppC72G43 {
     }
     // Each mode
     else if (this.#layout === KeyboardLayout.Avionics) {
-      if (button === Button.C2_R1) {
+      if (button === Button.Encoder) {
+        // NOP
+      } else if (button === Button.C2_R1) {
         // TODO: flaps up
       } else if (button === Button.C2_R2) {
         // TODO: flaps 10
@@ -170,7 +172,9 @@ export class AppC72G43 {
       }
       // Each sub mode
       else if (this.#layoutSystem === KeyboardSystemLayout.Engine) {
-        if (button === Button.C3_R1) {
+        if (button === Button.Encoder) {
+          // NOP
+        } else if (button === Button.C3_R1) {
           // TODO: magnetos off
         } else if (button === Button.C3_R2) {
           // TODO: magneto 1
@@ -188,7 +192,9 @@ export class AppC72G43 {
           // TODO: tank cutoff
         }
       } else if (this.#layoutSystem === KeyboardSystemLayout.Electro) {
-        if (button === Button.C3_R1) {
+        if (button === Button.Encoder) {
+          // NOP
+        } else if (button === Button.C3_R1) {
           // TODO: toggle master alternate
         } else if (button === Button.C3_R2) {
           // TODO: toggle master battery
@@ -206,7 +212,9 @@ export class AppC72G43 {
           // NOP
         }
       } else if (this.#layoutSystem === KeyboardSystemLayout.Light) {
-        if (button === Button.C3_R1) {
+        if (button === Button.Encoder) {
+          // NOP
+        } else if (button === Button.C3_R1) {
           // TODO: toggle navigation light
         } else if (button === Button.C3_R2) {
           // TODO: toggle taxi light
@@ -225,7 +233,9 @@ export class AppC72G43 {
         }
       }
     } else if (this.#layout === KeyboardLayout.ADF) {
-      if (button === Button.C2_R1) {
+      if (button === Button.Encoder) {
+        // NOP
+      } else if (button === Button.C2_R1) {
         this.#selectBigEncoderMode(EncoderBigMode.None);
         this.#selectSmallEncoderMode(EncoderSmallMode.ADFHeading);
       } else if (button === Button.C2_R2) {
@@ -267,7 +277,9 @@ export class AppC72G43 {
       }
       // Each sub mode
       else if (this.#layoutGx30 === KeyboardGx30Layout.Left) {
-        if (button === Button.C3_R1) {
+        if (button === Button.Encoder) {
+          // TODO: G540 left knob
+        } else if (button === Button.C3_R1) {
           // TODO: G530 SDI
         } else if (button === Button.C3_R2) {
           // TODO: G530 MSG
@@ -285,7 +297,9 @@ export class AppC72G43 {
           // NOP
         }
       } else if (this.#layoutGx30 === KeyboardGx30Layout.Right) {
-        if (button === Button.C3_R1) {
+        if (button === Button.Encoder) {
+          // TODO: G530 right knob
+        } else if (button === Button.C3_R1) {
           // TODO: G530 Range -
         } else if (button === Button.C3_R2) {
           // TODO: G530 Direct
@@ -318,7 +332,9 @@ export class AppC72G43 {
       }
       // Each sub mode
       else if (this.#layoutGx30 === KeyboardGx30Layout.Left) {
-        if (button === Button.C3_R1) {
+        if (button === Button.Encoder) {
+          // TODO: G430 left knob
+        } else if (button === Button.C3_R1) {
           // TODO: G430 SDI
         } else if (button === Button.C3_R2) {
           // TODO: G430 MSG
@@ -336,7 +352,9 @@ export class AppC72G43 {
           // NOP
         }
       } else if (this.#layoutGx30 === KeyboardGx30Layout.Right) {
-        if (button === Button.C3_R1) {
+        if (button === Button.Encoder) {
+          // TODO: G430 right knob
+        } else if (button === Button.C3_R1) {
           // TODO: G430 Range -
         } else if (button === Button.C3_R2) {
           // TODO: G430 Direct
@@ -355,7 +373,9 @@ export class AppC72G43 {
         }
       }
     } else if (this.#layout === KeyboardLayout.Autopilot) {
-      if (button === Button.C2_R1) {
+      if (button === Button.Encoder) {
+        // NOP
+      } else if (button === Button.C2_R1) {
         // TODO: AP HDG
       } else if (button === Button.C2_R2) {
         // NOP
@@ -382,7 +402,9 @@ export class AppC72G43 {
       }
     } else if (this.#layout === KeyboardLayout.Transponder) {
       // Static buttons
-      if (button === Button.C2_R1) {
+      if (button === Button.Encoder) {
+        // NOP
+      } else if (button === Button.C2_R1) {
         // TODO: Trans IDENT
       }
       // Sub mode selection
