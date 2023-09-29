@@ -1,5 +1,7 @@
 import { XPlane } from "./XPlane";
 
+// https://github.com/cpowell/cessna_172SP_skyhawk_for_xplane
+
 type TypeByFormat<F extends string> = F extends
   | "f"
   | "h"
@@ -85,8 +87,8 @@ export class SimC172G430 {
     Navigation: {
       // OBS and ADF
 
-      Nav1: this.#makeDataRef("sim/cockpit2/radios/indicators/nav1_relative_heading_electric_deg_pilot", "f"),
-      Nav2: this.#makeDataRef("sim/cockpit2/radios/indicators/nav2_relative_heading_electric_deg_pilot", "f"),
+      Nav1: this.#makeDataRef("sim/cockpit2/radios/actuators/nav1_obs_deg_mag_pilot", "f"),
+      Nav2: this.#makeDataRef("sim/cockpit2/radios/actuators/nav2_obs_deg_mag_pilot", "f"),
       ADFHeading: this.#makeDataRef("sim/cockpit2/radios/actuators/adf1_card_heading_deg_mag_pilot", "f"),
 
       ADFBearing: this.#makeReadonlyDataRef("sim/cockpit2/radios/indicators/adf1_relative_bearing_deg", "f"),
@@ -138,10 +140,54 @@ export class SimC172G430 {
       ALT: this.#makeCommand("sim/autopilot/altitude_hold"),
       VS: this.#makeCommand("sim/autopilot/vertical_speed"),
 
+      VerticalSpeed: this.#makeDataRef("sim/cockpit/autopilot/vertical_velocity", "f"),
       VSInc: this.#makeCommand("sim/autopilot/vertical_speed_up"),
       VSDec: this.#makeCommand("sim/autopilot/vertical_speed_down"),
 
       Disengage: this.#makeCommand("sim/autopilot/servos_fdir_off"),
+    },
+
+    Electrical: {
+      MasterBattery: this.#makeCommand("sim/electrical/batteries_toggle"),
+      MasterAlternator: this.#makeCommand("sim/electrical/generators_toggle"),
+      Bus1: this.#makeCommand("sim/systems/avionics_toggle"),
+      Bus2: this.#makeCommand("sim/electrical/cross_tie_toggle"),
+    },
+
+    Engine: {
+      MagnetosOff: this.#makeCommand("sim/magnetos/magnetos_off"),
+      MagnetosRight: this.#makeCommand("sim/magnetos/magnetos_right_1"),
+      MagnetosLeft: this.#makeCommand("sim/magnetos/magnetos_left_1"),
+      MagnetosBoth: this.#makeCommand("sim/magnetos/magnetos_both"),
+      Starter: this.#makeCommand("sim/starters/engage_starter_1"),
+      FuelPump: this.#makeCommand("sim/fuel/fuel_pumps_tog"),
+    },
+
+    Light: {
+      Navigation: this.#makeCommand("sim/lights/nav_lights_toggle"),
+      Taxi: this.#makeCommand("sim/lights/taxi_lights_toggle"),
+      Landing: this.#makeCommand("sim/lights/landing_lights_toggle"),
+      Beacon: this.#makeCommand("sim/lights/beacon_lights_toggle"),
+      Strobe: this.#makeCommand("sim/lights/strobe_lights_toggle"),
+    },
+
+    Flaps: {
+      Ratio: this.#makeDataRef("sim/cockpit2/controls/flap_ratio", "f"),
+    },
+
+    Trim: {
+      Up: this.#makeCommand("sim/flight_controls/pitch_trim_up"),
+      Down: this.#makeCommand("sim/flight_controls/pitch_trim_down"),
+    },
+
+    Brakes: {
+      Regular: this.#makeCommand("sim/flight_controls/brakes_toggle_regular"),
+      Max: this.#makeCommand("sim/flight_controls/brakes_toggle_max"),
+    },
+
+    Timer: {
+      SelectMode: this.#makeCommand("sim/instruments/timer_mode"),
+      ControlStartStop: this.#makeCommand("sim/instruments/timer_start_stop"),
     },
   };
 

@@ -127,29 +127,41 @@ export class AppC72G43 {
       if (button === Button.Encoder) {
         // NOP
       } else if (button === Button.C2_R1) {
-        // TODO: flaps up
+        // flaps up
+        this.#sim.interface.Flaps.Ratio.set(0);
       } else if (button === Button.C2_R2) {
-        // TODO: flaps 10
+        // flaps 10
+        this.#sim.interface.Flaps.Ratio.set(0.333);
       } else if (button === Button.C2_R3) {
-        // TODO: flaps 20
+        // flaps 20
+        this.#sim.interface.Flaps.Ratio.set(0.666);
       } else if (button === Button.C2_R4) {
-        // TODO: flaps full
+        // flaps full
+        this.#sim.interface.Flaps.Ratio.set(1);
       } else if (button === Button.C3_R1) {
-        // TODO: clock select
+        // chron mode
+        this.#sim.interface.Timer.SelectMode();
       } else if (button === Button.C3_R2) {
-        // TODO: toggle lending light
+        // toggle lending light
+        this.#sim.interface.Light.Landing();
       } else if (button === Button.C3_R3) {
-        // TODO: break normal
+        // break normal
+        this.#sim.interface.Brakes.Regular();
       } else if (button === Button.C3_R4) {
-        // TODO: break full
+        // break max
+        this.#sim.interface.Brakes.Max();
       } else if (button === Button.C4_R1) {
-        // TODO: clock control
+        // timer start/stop
+        this.#sim.interface.Timer.ControlStartStop();
       } else if (button === Button.C4_R2) {
-        // TODO: toggle taxi light
+        // toggle taxi light
+        this.#sim.interface.Light.Taxi();
       } else if (button === Button.C4_R3) {
-        // TODO: trim nose down
+        // trim nose down
+        this.#sim.interface.Trim.Down();
       } else if (button === Button.C4_R4) {
-        // TODO: trim nose up
+        // trim nose up
+        this.#sim.interface.Trim.Up();
       }
     } else if (this.#layout === KeyboardLayout.Systems) {
       // Sub mode selection
@@ -167,33 +179,42 @@ export class AppC72G43 {
         if (button === Button.Encoder) {
           // NOP
         } else if (button === Button.C3_R1) {
-          // TODO: magnetos off
+          // magnetos off
+          this.#sim.interface.Engine.MagnetosOff();
         } else if (button === Button.C3_R2) {
-          // TODO: magneto 1
+          // magneto R
+          this.#sim.interface.Engine.MagnetosRight();
         } else if (button === Button.C3_R3) {
-          // TODO: magneto 2
+          // magneto L
+          this.#sim.interface.Engine.MagnetosLeft();
         } else if (button === Button.C3_R4) {
-          // TODO: both magnetos
+          // both magnetos
+          this.#sim.interface.Engine.MagnetosBoth();
         } else if (button === Button.C4_R1) {
           // TODO: starter
         } else if (button === Button.C4_R2) {
-          // TODO: toggle fuel pump
+          // toggle fuel pump
+          this.#sim.interface.Engine.FuelPump();
         } else if (button === Button.C4_R3) {
           // TODO: toggle tank selection
         } else if (button === Button.C4_R4) {
-          // TODO: tank cutoff
+          // TODO: tank shutoff
         }
       } else if (this.#layoutSystem === KeyboardSystemLayout.Electro) {
         if (button === Button.Encoder) {
           // NOP
         } else if (button === Button.C3_R1) {
-          // TODO: toggle master alternate
+          // toggle master alternate
+          this.#sim.interface.Electrical.MasterAlternator();
         } else if (button === Button.C3_R2) {
-          // TODO: toggle master battery
+          // toggle master battery
+          this.#sim.interface.Electrical.MasterBattery();
         } else if (button === Button.C3_R3) {
-          // TODO: toggle bus 1
+          // toggle bus 1
+          this.#sim.interface.Electrical.Bus1();
         } else if (button === Button.C3_R4) {
-          // TODO: toggle bus 2
+          // toggle bus 2
+          this.#sim.interface.Electrical.Bus2();
         } else if (button === Button.C4_R1) {
           // NOP
         } else if (button === Button.C4_R2) {
@@ -207,19 +228,24 @@ export class AppC72G43 {
         if (button === Button.Encoder) {
           // NOP
         } else if (button === Button.C3_R1) {
-          // TODO: toggle navigation light
+          // toggle navigation light
+          this.#sim.interface.Light.Navigation();
         } else if (button === Button.C3_R2) {
-          // TODO: toggle taxi light
+          // toggle taxi light
+          this.#sim.interface.Light.Taxi();
         } else if (button === Button.C3_R3) {
-          // TODO: toggle landing light
+          // toggle landing light
+          this.#sim.interface.Light.Landing();
         } else if (button === Button.C3_R4) {
           // NOP
         } else if (button === Button.C4_R1) {
-          // TODO: toggle beacon light
+          // toggle beacon light
+          this.#sim.interface.Light.Beacon();
         } else if (button === Button.C4_R2) {
           // NOP
         } else if (button === Button.C4_R3) {
-          // TODO: toggle strobe light
+          // toggle strobe light
+          this.#sim.interface.Light.Strobe();
         } else if (button === Button.C4_R4) {
           // NOP
         }
@@ -368,7 +394,8 @@ export class AppC72G43 {
       if (button === Button.Encoder) {
         // NOP
       } else if (button === Button.C2_R1) {
-        // TODO: AP HDG
+        // AP HDG
+        this.#sim.interface.Autopilot.HDG();
       } else if (button === Button.C2_R2) {
         // NOP
       } else if (button === Button.C2_R3) {
@@ -376,7 +403,8 @@ export class AppC72G43 {
       } else if (button === Button.C2_R4) {
         // NOP
       } else if (button === Button.C3_R1) {
-        // TODO: AP NAV
+        // AP NAV
+        this.#sim.interface.Autopilot.NAV();
       } else if (button === Button.C3_R2) {
         // NOP
       } else if (button === Button.C3_R3) {
@@ -384,13 +412,20 @@ export class AppC72G43 {
       } else if (button === Button.C3_R4) {
         // NOP
       } else if (button === Button.C4_R1) {
-        // TODO: AP APR
+        // AP APR
+        this.#sim.interface.Autopilot.APR();
       } else if (button === Button.C4_R2) {
-        // TODO: AP REV
+        // AP REV
+        this.#sim.interface.Autopilot.REV();
       } else if (button === Button.C4_R3) {
-        // TODO: AP ALT
+        // AP ALT
+        this.#sim.interface.Autopilot.ALT();
       } else if (button === Button.C4_R4) {
-        // TODO: AP VS
+        // AP VS
+        this.#sim.interface.Autopilot.VS();
+        this.#sim.interface.Autopilot.VerticalSpeed.get().then((value) => {
+          this.#dev.call[Command.SetSmallEncoderPosition](Math.round(value / 100));
+        });
       }
     } else if (this.#layout === KeyboardLayout.Transponder) {
       // Static buttons
@@ -398,6 +433,7 @@ export class AppC72G43 {
         // NOP
       } else if (button === Button.C2_R1) {
         // TODO: Trans IDENT
+        this.#sim.interface.Transponder.IDENT();
       }
       // Sub mode selection
       else if (button === Button.C2_R3) {
@@ -416,31 +452,43 @@ export class AppC72G43 {
         } else if (button === Button.C3_R4) {
           // TODO: Trans TEST
         } else if (button === Button.C4_R1) {
-          // TODO: Trans ALT
+          // Trans ALT
+          this.#sim.interface.Transponder.ALT();
         } else if (button === Button.C4_R2) {
-          // TODO: Trans ON
+          // Trans ON
+          this.#sim.interface.Transponder.ON();
         } else if (button === Button.C4_R3) {
-          // TODO: Trans STB
+          // Trans STB
+          this.#sim.interface.Transponder.STBY();
         } else if (button === Button.C4_R4) {
-          // TODO: Trans OFF
+          // Trans OFF
+          this.#sim.interface.Transponder.OFF();
         }
       } else if (this.#layoutTransponder === KeyboardTransponderLayout.Code) {
         if (button === Button.C3_R1) {
-          // TODO: Trans 1
+          // Trans 1
+          this.#sim.interface.Transponder.Digit1();
         } else if (button === Button.C3_R2) {
-          // TODO: Trans 3
+          // Trans 3
+          this.#sim.interface.Transponder.Digit3();
         } else if (button === Button.C3_R3) {
-          // TODO: Trans 5
+          // Trans 5
+          this.#sim.interface.Transponder.Digit5();
         } else if (button === Button.C3_R4) {
-          // TODO: Trans 7
+          // Trans 7
+          this.#sim.interface.Transponder.Digit7();
         } else if (button === Button.C4_R1) {
-          // TODO: Trans 2
+          // Trans 2
+          this.#sim.interface.Transponder.Digit2();
         } else if (button === Button.C4_R2) {
-          // TODO: Trans 4
+          // Trans 4
+          this.#sim.interface.Transponder.Digit4();
         } else if (button === Button.C4_R3) {
-          // TODO: Trans 6
+          // Trans 6
+          this.#sim.interface.Transponder.Digit6();
         } else if (button === Button.C4_R4) {
-          // TODO: Trans 0
+          // Trans 0
+          this.#sim.interface.Transponder.Digit0();
         }
       }
     }
@@ -474,12 +522,14 @@ export class AppC72G43 {
         // move heading bug
         this.#sim.interface.Avionics.HeadingBug.set(position);
       } else if (this.#encoderSmallMode === EncoderSmallMode.GyroCompassAdjust) {
-        // TODO: adjust gyro compass
+        // adjust gyro compass
+        this.#sim.interface.Avionics.DriftAdjust.set(position);
       } else if (this.#encoderSmallMode === EncoderSmallMode.OBS2) {
         // rotate OBS2
         this.#sim.interface.Navigation.Nav2.set(position);
       } else if (this.#encoderSmallMode === EncoderSmallMode.ADFHeading) {
-        // TODO: rotate ADF heading
+        // rotate ADF heading
+        this.#sim.interface.Navigation.ADFHeading.set(position);
       } else if (this.#encoderSmallMode === EncoderSmallMode.ADFSmall) {
         // TODO: rotate ADF small
       } else if (this.#encoderSmallMode === EncoderSmallMode.G530LeftSmall) {
@@ -491,7 +541,8 @@ export class AppC72G43 {
       } else if (this.#encoderSmallMode === EncoderSmallMode.G430RightSmall) {
         // TODO: rotate G430 right small
       } else if (this.#encoderSmallMode === EncoderSmallMode.Autopilot) {
-        // TODO: rotate ap vs
+        // rotate ap vs
+        this.#sim.interface.Autopilot.VerticalSpeed.set(Math.round(position) * 100);
       }
     }
   }
@@ -515,8 +566,8 @@ export class AppC72G43 {
       this.#selectBigEncoderMode(EncoderBigMode.OBS1);
       this.#selectSmallEncoderMode(EncoderSmallMode.OBS2);
     } else if (layout === KeyboardLayout.ADF) {
-      this.#selectBigEncoderMode(EncoderBigMode.ADFBig);
-      this.#selectSmallEncoderMode(EncoderSmallMode.ADFSmall);
+      this.#selectBigEncoderMode(EncoderBigMode.None);
+      this.#selectSmallEncoderMode(EncoderSmallMode.ADFHeading);
     } else if (layout === KeyboardLayout.G530) {
       this.#selectBigEncoderMode(EncoderBigMode.G530LeftBig);
       this.#selectSmallEncoderMode(EncoderSmallMode.G530LeftSmall);
@@ -582,6 +633,21 @@ export class AppC72G43 {
       // << heading bug position
       this.#sim.interface.Navigation.Nav2.get().then((value) => {
         this.#dev.call[Command.SetSmallEncoderPosition](value);
+      });
+    } else if (this.#encoderSmallMode === EncoderSmallMode.GyroCompassAdjust) {
+      // << heading bug position
+      this.#sim.interface.Avionics.DriftAdjust.get().then((value) => {
+        this.#dev.call[Command.SetSmallEncoderPosition](value);
+      });
+    } else if (this.#encoderSmallMode === EncoderSmallMode.ADFHeading) {
+      // << heading bug position
+      this.#sim.interface.Navigation.ADFHeading.get().then((value) => {
+        this.#dev.call[Command.SetSmallEncoderPosition](value);
+      });
+    } else if (this.#encoderSmallMode === EncoderSmallMode.Autopilot) {
+      // << heading bug position
+      this.#sim.interface.Autopilot.VerticalSpeed.get().then((value) => {
+        this.#dev.call[Command.SetSmallEncoderPosition](Math.round(value / 100));
       });
     }
 
