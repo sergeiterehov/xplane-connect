@@ -1,27 +1,5 @@
-import { DeviceG43 } from "../devices/DeviceG43";
+import { Button, DeviceG43 } from "../devices/DeviceG43";
 import { SimC172G430 } from "../models/SimC172G430";
-
-// TODO: move to device
-enum Button {
-  // Each encoder emit common event
-  Encoder,
-  C1_R1,
-  C1_R2,
-  C1_R3,
-  C1_R4,
-  C2_R1,
-  C2_R2,
-  C2_R3,
-  C2_R4,
-  C3_R1,
-  C3_R2,
-  C3_R3,
-  C3_R4,
-  C4_R1,
-  C4_R2,
-  C4_R3,
-  C4_R4,
-}
 
 enum KeyboardLayout {
   Avionics = 10,
@@ -98,8 +76,16 @@ export class AppC72G43 {
     this.#dev = dev;
     this.#sim = sim;
 
-    this.#dev.on("small_encoder_click", () => {
-      console.log("Small click");
+    this.#dev.on("button_click", ({ button, long }) => {
+      this.#handleKeyboardClick(button, long);
+    });
+
+    this.#dev.on("big_encoder_rotate", ({ delta, position }) => {
+      this.#handleEncoderRotate(delta, position, true);
+    });
+
+    this.#dev.on("small_encoder_rotate", ({ delta, position }) => {
+      this.#handleEncoderRotate(delta, position, false);
     });
   }
 
@@ -454,8 +440,28 @@ export class AppC72G43 {
     }
   }
 
-  #handleEncoderRotate(delta: number, position: number, small: boolean) {
-    if (small) {
+  #handleEncoderRotate(delta: number, position: number, big: boolean) {
+    if (big) {
+      if (this.#encoderBigMode === EncoderBigMode.None) {
+        // NOP
+      } else if (this.#encoderBigMode === EncoderBigMode.AltPressure) {
+        // TODO: rotate alt pressure adjust
+      } else if (this.#encoderBigMode === EncoderBigMode.PitchAdjust) {
+        // TODO: rotate pitch adjust
+      } else if (this.#encoderBigMode === EncoderBigMode.OBS1) {
+        // TODO: rotate OBS1
+      } else if (this.#encoderBigMode === EncoderBigMode.ADFBig) {
+        // TODO: rotate ADF big
+      } else if (this.#encoderBigMode === EncoderBigMode.G530LeftBig) {
+        // TODO: rotate G530 left big
+      } else if (this.#encoderBigMode === EncoderBigMode.G530RightBig) {
+        // TODO: rotate G530 right big
+      } else if (this.#encoderBigMode === EncoderBigMode.G430LeftBig) {
+        // TODO: rotate G430 left big
+      } else if (this.#encoderBigMode === EncoderBigMode.G430RightBig) {
+        // TODO: rotate G430 right big
+      }
+    } else {
       if (this.#encoderSmallMode === EncoderSmallMode.None) {
         // NOP
       } else if (this.#encoderSmallMode === EncoderSmallMode.HeadingBug) {
@@ -478,26 +484,6 @@ export class AppC72G43 {
         // TODO: rotate G430 right small
       } else if (this.#encoderSmallMode === EncoderSmallMode.Autopilot) {
         // TODO: rotate ap vs
-      }
-    } else {
-      if (this.#encoderBigMode === EncoderBigMode.None) {
-        // NOP
-      } else if (this.#encoderBigMode === EncoderBigMode.AltPressure) {
-        // TODO: rotate alt pressure adjust
-      } else if (this.#encoderBigMode === EncoderBigMode.PitchAdjust) {
-        // TODO: rotate pitch adjust
-      } else if (this.#encoderBigMode === EncoderBigMode.OBS1) {
-        // TODO: rotate OBS1
-      } else if (this.#encoderBigMode === EncoderBigMode.ADFBig) {
-        // TODO: rotate ADF big
-      } else if (this.#encoderBigMode === EncoderBigMode.G530LeftBig) {
-        // TODO: rotate G530 left big
-      } else if (this.#encoderBigMode === EncoderBigMode.G530RightBig) {
-        // TODO: rotate G530 right big
-      } else if (this.#encoderBigMode === EncoderBigMode.G430LeftBig) {
-        // TODO: rotate G430 left big
-      } else if (this.#encoderBigMode === EncoderBigMode.G430RightBig) {
-        // TODO: rotate G430 right big
       }
     }
   }

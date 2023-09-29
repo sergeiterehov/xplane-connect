@@ -1,6 +1,27 @@
 import EventEmitter from "events";
 import { SerialPort, ReadlineParser } from "serialport";
 
+export enum Button {
+  // Each encoder emit common event
+  Encoder,
+  C1_R1,
+  C1_R2,
+  C1_R3,
+  C1_R4,
+  C2_R1,
+  C2_R2,
+  C2_R3,
+  C2_R4,
+  C3_R1,
+  C3_R2,
+  C3_R3,
+  C3_R4,
+  C4_R1,
+  C4_R2,
+  C4_R3,
+  C4_R4,
+}
+
 enum Command {
   Reset = 1,
 }
@@ -39,9 +60,9 @@ const messageDescriptions: {
 };
 
 interface Events {
+  big_encoder_rotate: [{ delta: number; position: number }];
   small_encoder_rotate: [{ delta: number; position: number }];
-  small_encoder_click: [];
-  small_encoder_long_click: [];
+  button_click: [{ button: Button; long: boolean }];
 }
 
 export declare interface DeviceG43 {
@@ -93,10 +114,10 @@ export class DeviceG43 extends EventEmitter {
       this.emit("small_encoder_rotate", e);
     },
     [Message.EncoderSmallShortPress]: () => {
-      this.emit("small_encoder_click");
+      this.emit("button_click", { button: Button.Encoder, long: false });
     },
     [Message.EncoderSmallLongPress]: () => {
-      this.emit("small_encoder_long_click");
+      this.emit("button_click", { button: Button.Encoder, long: true });
     },
     [Message.EncoderSmallButton]: (e: { state: number }) => {
       // TODO: not implemented
