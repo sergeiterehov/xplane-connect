@@ -1,4 +1,4 @@
-import { Button, DeviceG43 } from "../devices/DeviceG43";
+import { Button, Command, DeviceG43 } from "../devices/DeviceG43";
 import { SimC172G430 } from "../models/SimC172G430";
 
 enum KeyboardLayout {
@@ -93,17 +93,6 @@ export class AppC72G43 {
     this.#dev.on("small_encoder_rotate", ({ delta, position }) => {
       this.#handleEncoderRotate(delta, position, false);
     });
-
-    setInterval(() => {
-      console.log({
-        layout: KeyboardLayout[this.#layout],
-        layoutSystem: KeyboardSystemLayout[this.#layoutSystem],
-        layoutGx30: KeyboardGx30Layout[this.#layoutGx30],
-        layoutTransponder: KeyboardTransponderLayout[this.#layoutTransponder],
-        encoderBigMode: EncoderBigMode[this.#encoderBigMode],
-        encoderSmallMode: EncoderSmallMode[this.#encoderSmallMode],
-      });
-    }, 1000);
   }
 
   #handleKeyboardClick(button: Button, long: boolean) {
@@ -482,11 +471,13 @@ export class AppC72G43 {
       if (this.#encoderSmallMode === EncoderSmallMode.None) {
         // NOP
       } else if (this.#encoderSmallMode === EncoderSmallMode.HeadingBug) {
-        // TODO: move heading bug
+        // move heading bug
+        this.#sim.interface.Avionics.HeadingBug.set(position);
       } else if (this.#encoderSmallMode === EncoderSmallMode.GyroCompassAdjust) {
         // TODO: adjust gyro compass
       } else if (this.#encoderSmallMode === EncoderSmallMode.OBS2) {
-        // TODO: rotate OBS2
+        // rotate OBS2
+        this.#sim.interface.Navigation.Nav2.set(position);
       } else if (this.#encoderSmallMode === EncoderSmallMode.ADFHeading) {
         // TODO: rotate ADF heading
       } else if (this.#encoderSmallMode === EncoderSmallMode.ADFSmall) {
@@ -507,6 +498,8 @@ export class AppC72G43 {
 
   #selectLayout(layout: KeyboardLayout) {
     this.#layout = layout;
+
+    console.log({ layout: KeyboardLayout[this.#layout] });
 
     this.#layoutSystem = KeyboardSystemLayout.Default;
     this.#layoutGx30 = KeyboardGx30Layout.Default;
@@ -541,10 +534,14 @@ export class AppC72G43 {
 
   #selectSystemLayout(layout: KeyboardSystemLayout) {
     this.#layoutSystem = layout;
+
+    console.log({ layoutSystem: KeyboardSystemLayout[this.#layoutSystem] });
   }
 
   #selectGx30Layout(layout: KeyboardGx30Layout) {
     this.#layoutGx30 = layout;
+
+    console.log({ layoutGx30: KeyboardGx30Layout[this.#layoutGx30] });
 
     if (this.#layout === KeyboardLayout.G530) {
       if (this.#layoutGx30 === KeyboardGx30Layout.Left) {
@@ -567,13 +564,39 @@ export class AppC72G43 {
 
   #selectTransponderLayout(layout: KeyboardTransponderLayout) {
     this.#layoutTransponder = layout;
+
+    console.log({ layoutTransponder: KeyboardTransponderLayout[this.#layoutTransponder] });
   }
 
   #selectSmallEncoderMode(mode: EncoderSmallMode) {
     this.#encoderSmallMode = mode;
+
+    console.log({ encoderSmallMode: EncoderSmallMode[this.#encoderSmallMode] });
+
+    if (this.#encoderSmallMode === EncoderSmallMode.HeadingBug) {
+      // << heading bug position
+      this.#sim.interface.Avionics.HeadingBug.get().then((value) => {
+        this.#dev.call[Command.SetSmallEncoderPosition](value);
+      });
+    } else if (this.#encoderSmallMode === EncoderSmallMode.OBS2) {
+      // << heading bug position
+      this.#sim.interface.Navigation.Nav2.get().then((value) => {
+        this.#dev.call[Command.SetSmallEncoderPosition](value);
+      });
+    }
+
+    // FIXME: rest modes for position sync
   }
 
   #selectBigEncoderMode(mode: EncoderBigMode) {
     this.#encoderBigMode = mode;
+
+    console.log({ encoderBigMode: EncoderBigMode[this.#encoderBigMode] });
+
+    if (this.#encoderBigMode === EncoderBigMode.AltPressure) {
+      // TODO: << alt pressure
+    }
+
+    // FIXME: rest modes for position sync
   }
 }

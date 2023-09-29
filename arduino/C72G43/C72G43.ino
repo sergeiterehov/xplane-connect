@@ -22,6 +22,12 @@
 
 const int ShortPressTime = 500;
 
+enum Command
+{
+  Reset = 1,
+  SetSmallEncoderPosition = 2,
+};
+
 enum Message
 {
   EncoderSmallRotate = 1,
@@ -47,6 +53,12 @@ struct State
 
 struct State state;
 struct State statePrev;
+
+struct
+{
+  char buffer[256];
+  int length;
+} command;
 
 volatile struct
 {
@@ -157,6 +169,46 @@ void processKeyboard()
   }
 }
 
+bool tryReadCommand()
+{
+  if (!Serial.available())
+  {
+    return false;
+  }
+
+  while (Serial.available())
+  {
+    char current = Serial.read();
+
+    if (current == '\n')
+    {
+      return true;
+    }
+
+    command.buffer[command.length++] = current;
+  }
+
+  return false;
+}
+
+bool processSerialInput()
+{
+  if (!tryReadCommand())
+  {
+    return;
+  }
+
+  if (command.buffer[0] == '0' + SetSmallEncoderPosition)
+  {
+    float position = atof(&command.buffer[2]);
+
+    state.encoderSmallPosition = position;
+    statePrev.encoderSmallPosition = position;
+  }
+
+  command.length = 0;
+}
+
 void setup()
 {
   state.encoderSmallPosition = -0.5;
@@ -197,6 +249,8 @@ void setup()
 
 void loop()
 {
+  processSerialInput();
+
   processSmallEncoderButton();
   processKeyboard();
 

@@ -73,6 +73,8 @@ export class XPlane extends EventEmitter {
 
       cb(msg);
     });
+
+    process.nextTick(() => this.emit("log", `XPlane created ${this.#host}:${this.#port}.`));
   }
 
   async #request(req: Buffer, withResponse: boolean): Promise<Buffer> {

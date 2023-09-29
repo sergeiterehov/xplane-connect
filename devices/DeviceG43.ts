@@ -23,13 +23,10 @@ export enum Button {
   C4_R4,
 }
 
-enum Command {
+export enum Command {
   Reset = 1,
+  SetSmallEncoderPosition = 2,
 }
-
-type CommandTypes = {
-  [Command.Reset]: { args: [] };
-};
 
 enum Message {
   EncoderSmallRotate = 1,
@@ -75,6 +72,8 @@ const messageDescriptions: {
 };
 
 interface Events {
+  log: [string];
+
   big_encoder_rotate: [{ delta: number; position: number }];
   small_encoder_rotate: [{ delta: number; position: number }];
   button_click: [{ button: Button }];
@@ -96,7 +95,9 @@ export class DeviceG43 extends EventEmitter {
 
   #parser: ReadlineParser;
 
-  #call = (command: Command, ...args: CommandTypes[typeof command]["args"]) => {
+  #call = (command: Command, ...args: Array<number | string>) => {
+    this.emit("log", `CALL ${Command[command]}(${args.join(", ")})`);
+
     this.#serial.write(`${command}\t${args.map((val) => String(val).replace("\t", "\\t")).join("\t")}\n`);
   };
 
@@ -146,20 +147,31 @@ export class DeviceG43 extends EventEmitter {
     },
   };
 
+  call = {
+    [Command.Reset]: () => {
+      this.#call(Command.Reset);
+    },
+    [Command.SetSmallEncoderPosition]: (position: number) => {
+      this.#call(Command.SetSmallEncoderPosition, position);
+    },
+  };
+
   constructor(path: string) {
     super();
 
+    const baudRate = 115200;
+
     this.#serial = new SerialPort({
       path,
-      baudRate: 115200,
+      baudRate,
     });
 
     this.#serial.on("open", () => {
-      console.log("Serial Port is opened.");
+      this.emit("log", `Serial Port is opened ${path} at ${baudRate}.`);
     });
 
     this.#serial.on("error", (e) => {
-      console.log("Serial port error", e);
+      this.emit("log", `Serial port ${path} error: ${e}`);
     });
 
     this.#parser = new ReadlineParser();

@@ -17,6 +17,8 @@ if (!SERIAL_PORT) {
 
 const dev = new DeviceG43(SERIAL_PORT);
 
+dev.on("log", console.log);
+
 // XPlane
 
 const xp = new XPlane();
