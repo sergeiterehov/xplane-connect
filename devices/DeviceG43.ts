@@ -4,6 +4,7 @@ import { SerialPort, ReadlineParser } from "serialport";
 export enum Button {
   // Each encoder emit common event
   Encoder,
+  // Ordering here is important
   C1_R1,
   C1_R2,
   C1_R3,
@@ -35,6 +36,8 @@ enum Message {
   EncoderSmallButton = 2,
   EncoderSmallShortPress = 3,
   EncoderSmallLongPress = 4,
+  KeyboardShortPress = 5,
+  KeyboardLongPress = 6,
 }
 
 const messageDescriptions: {
@@ -56,6 +59,18 @@ const messageDescriptions: {
   },
   [Message.EncoderSmallLongPress]: {
     data: [],
+  },
+  [Message.KeyboardShortPress]: {
+    data: [
+      { name: "row", type: Number },
+      { name: "col", type: Number },
+    ],
+  },
+  [Message.KeyboardLongPress]: {
+    data: [
+      { name: "row", type: Number },
+      { name: "col", type: Number },
+    ],
   },
 };
 
@@ -108,9 +123,9 @@ export class DeviceG43 extends EventEmitter {
     handler(event);
   };
 
-  #messageHandlers: Partial<{
+  #messageHandlers: {
     [K in Message]: (e: any) => void;
-  }> = {
+  } = {
     [Message.EncoderSmallRotate]: (e: { delta: number; position: number }) => {
       this.emit("small_encoder_rotate", e);
     },
@@ -121,7 +136,13 @@ export class DeviceG43 extends EventEmitter {
       this.emit("button_long_click", { button: Button.Encoder });
     },
     [Message.EncoderSmallButton]: (e: { state: number }) => {
-      // TODO: not implemented
+      // TODO: not implemented. Pressed/released state.
+    },
+    [Message.KeyboardShortPress]: (e: { row: number; col: number }) => {
+      this.emit("button_click", { button: Button.C1_R1 + e.col * 4 + e.row });
+    },
+    [Message.KeyboardLongPress]: (e: { row: number; col: number }) => {
+      this.emit("button_long_click", { button: Button.C1_R1 + e.col * 4 + e.row });
     },
   };
 

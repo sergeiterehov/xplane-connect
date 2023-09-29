@@ -77,10 +77,12 @@ export class AppC72G43 {
     this.#sim = sim;
 
     this.#dev.on("button_click", ({ button }) => {
+      console.log("CLICK", button);
       this.#handleKeyboardClick(button, false);
     });
 
     this.#dev.on("button_long_click", ({ button }) => {
+      console.log("CLICK_LONG", button);
       this.#handleKeyboardClick(button, true);
     });
 
@@ -91,6 +93,17 @@ export class AppC72G43 {
     this.#dev.on("small_encoder_rotate", ({ delta, position }) => {
       this.#handleEncoderRotate(delta, position, false);
     });
+
+    setInterval(() => {
+      console.log({
+        layout: KeyboardLayout[this.#layout],
+        layoutSystem: KeyboardSystemLayout[this.#layoutSystem],
+        layoutGx30: KeyboardGx30Layout[this.#layoutGx30],
+        layoutTransponder: KeyboardTransponderLayout[this.#layoutTransponder],
+        encoderBigMode: EncoderBigMode[this.#encoderBigMode],
+        encoderSmallMode: EncoderSmallMode[this.#encoderSmallMode],
+      });
+    }, 1000);
   }
 
   #handleKeyboardClick(button: Button, long: boolean) {
