@@ -509,7 +509,7 @@ export class AppC72G43 extends EventEmitter {
         this.#sim.interface.Avionics.AltPressure.set(position / 100);
       } else if (this.#encoderBigMode === EncoderBigMode.PitchAdjust) {
         // rotate pitch adjust
-        this.#sim.interface.Avionics.HorizonAdjust.set(position);
+        this.#sim.interface.Avionics.HorizonAdjust.set(position / 5);
       } else if (this.#encoderBigMode === EncoderBigMode.OBS1) {
         // rotate OBS1
         this.#sim.interface.Navigation.Nav1.set(position);
@@ -674,6 +674,9 @@ export class AppC72G43 extends EventEmitter {
     if (this.#encoderBigMode === EncoderBigMode.AltPressure) {
       // << alt pressure
       this.#encoderBigSetter(this.#sim.interface.Avionics.AltPressure.get().then((val) => val * 100));
+    } else if (this.#encoderBigMode === EncoderBigMode.PitchAdjust) {
+      // << alt pressure
+      this.#encoderBigSetter(this.#sim.interface.Avionics.HorizonAdjust.get().then((val) => val * 5));
     }
 
     // FIXME: rest modes for position sync
