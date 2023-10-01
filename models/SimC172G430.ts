@@ -72,11 +72,10 @@ export class SimC172G430 {
       HeadingBug: this.#makeDataRef("sim/cockpit/autopilot/heading_mag", "f"),
       DriftAdjust: this.#makeDataRef("sim/cockpit/gyros/dg_drift_vac_deg", "f"),
       HorizonAdjust: this.#makeDataRef("sim/cockpit2/gauges/actuators/artificial_horizon_adjust_deg_pilot", "f"),
-      BarometerAdjust: this.#makeDataRef("sim/cockpit2/gauges/indicators/altitude_ft_pilot", "f"),
+      AltPressure: this.#makeDataRef("sim/cockpit2/gauges/actuators/barometer_setting_in_hg_pilot", "f"),
 
       Compass: this.#makeReadonlyDataRef("sim/cockpit2/gauges/indicators/compass_heading_deg_mag", "f"),
       Heading: this.#makeReadonlyDataRef("sim/cockpit2/gauges/indicators/heading_vacuum_deg_mag_pilot", "f"),
-      AltPressure: this.#makeReadonlyDataRef("sim/cockpit2/gauges/actuators/barometer_setting_in_hg_pilot", "f"),
       AirSpeed: this.#makeReadonlyDataRef("	sim/cockpit2/gauges/indicators/calibrated_airspeed_kts_pilot", "f"),
       VerticalSpeed: this.#makeReadonlyDataRef("sim/cockpit2/gauges/indicators/vvi_fpm_pilot", "f"),
       Slip: this.#makeReadonlyDataRef("sim/cockpit2/gauges/indicators/slip_deg", "f"),

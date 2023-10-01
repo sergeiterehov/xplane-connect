@@ -1,7 +1,8 @@
 // https://devboards.info/boards/arduino-mega2560-rev3
 
-#define ENCODER_BIG_A 2
-#define ENCODER_BIG_B 3
+#define ENCODER_BIG_A 19
+#define ENCODER_BIG_B 18
+#define ENCODER_BIG_BTN 16
 
 #define ENCODER_SMALL_A 21
 #define ENCODER_SMALL_B 20
@@ -25,21 +26,33 @@ const int ShortPressTime = 500;
 enum Command
 {
   Reset = 1,
-  SetSmallEncoderPosition = 2,
+  SetBigEncoderPosition = 2,
+  SetSmallEncoderPosition = 3,
 };
 
 enum Message
 {
-  EncoderSmallRotate = 1,
-  EncoderSmallButton = 2,
-  EncoderSmallShortPress = 3,
-  EncoderSmallLongPress = 4,
-  KeyboardShortPress = 5,
-  KeyboardLongPress = 6,
+  EncoderBigRotate = 1,
+  EncoderBigButton = 2,
+  EncoderBigShortPress = 3,
+  EncoderBigLongPress = 4,
+
+  EncoderSmallRotate = 5,
+  EncoderSmallButton = 6,
+  EncoderSmallShortPress = 7,
+  EncoderSmallLongPress = 8,
+
+  KeyboardShortPress = 9,
+  KeyboardLongPress = 10,
 };
 
 struct State
 {
+  float encoderBigPosition;
+  bool encoderBigButton;
+  bool encoderBigOnShortPress;
+  bool encoderBigOnLongPress;
+
   float encoderSmallPosition;
   bool encoderSmallButton;
   bool encoderSmallOnShortPress;
@@ -65,6 +78,13 @@ volatile struct
   int lastState;
   int btnLastState;
   unsigned long pressedTime;
+} encoderBig;
+
+volatile struct
+{
+  int lastState;
+  int btnLastState;
+  unsigned long pressedTime;
 } encoderSmall;
 
 struct
@@ -77,6 +97,19 @@ struct
 
 const int kbRows[] = {KB_ROW_1, KB_ROW_2, KB_ROW_3, KB_ROW_4};
 const int kbCols[] = {KB_COL_1, KB_COL_2, KB_COL_3, KB_COL_4};
+
+void intEncoderBig()
+{
+  int aState = digitalRead(ENCODER_BIG_A);
+
+  if (aState != encoderBig.lastState)
+  {
+    int bState = digitalRead(ENCODER_BIG_B);
+
+    state.encoderBigPosition += (bState != encoderBig.lastState) ? -0.5 : 0.5;
+    encoderBig.lastState = aState;
+  }
+}
 
 void intEncoderSmall()
 {
@@ -91,9 +124,38 @@ void intEncoderSmall()
   }
 }
 
-void intEncoderBig()
+void processBigEncoderButton()
 {
-  // NOP
+  // read the state of the switch/button:
+  int btnLevel = digitalRead(ENCODER_BIG_BTN);
+  int btnPrev = encoderBig.btnLastState;
+
+  if (btnPrev == HIGH && btnLevel == LOW)
+  {
+    encoderBig.pressedTime = millis();
+
+    state.encoderBigButton = true;
+  }
+  else if (btnPrev == LOW && btnLevel == HIGH)
+  {
+    unsigned long releasedTime = millis();
+
+    long pressDuration = releasedTime - encoderBig.pressedTime;
+
+    if (pressDuration < ShortPressTime)
+    {
+      state.encoderBigOnShortPress = true;
+    }
+    else
+    {
+      state.encoderBigOnLongPress = true;
+    }
+
+    state.encoderBigButton = false;
+  }
+
+  // save the the last state
+  encoderBig.btnLastState = btnLevel;
 }
 
 void processSmallEncoderButton()
@@ -198,7 +260,14 @@ bool processSerialInput()
     return;
   }
 
-  if (command.buffer[0] == '0' + SetSmallEncoderPosition)
+  if (command.buffer[0] == '0' + SetBigEncoderPosition)
+  {
+    float position = atof(&command.buffer[2]);
+
+    state.encoderBigPosition = position;
+    statePrev.encoderBigPosition = position;
+  }
+  else if (command.buffer[0] == '0' + SetSmallEncoderPosition)
   {
     float position = atof(&command.buffer[2]);
 
@@ -214,6 +283,7 @@ void setup()
   state.encoderSmallPosition = -0.5;
   statePrev.encoderSmallPosition = -0.5;
 
+  encoderBig.btnLastState = HIGH;
   encoderSmall.btnLastState = HIGH;
 
   for (int row = 0; row < 4; row += 1)
@@ -226,6 +296,7 @@ void setup()
 
   pinMode(LED_BUILTIN, OUTPUT);
 
+  pinMode(ENCODER_BIG_BTN, INPUT);
   pinMode(ENCODER_SMALL_BTN, INPUT);
 
   pinMode(KB_ROW_1, OUTPUT);
@@ -251,8 +322,39 @@ void loop()
 {
   processSerialInput();
 
+  processBigEncoderButton();
   processSmallEncoderButton();
   processKeyboard();
+
+  if (state.encoderBigPosition != statePrev.encoderBigPosition)
+  {
+    Serial.print(EncoderBigRotate);
+    Serial.print('\t');
+    Serial.print(state.encoderBigPosition - statePrev.encoderBigPosition);
+    Serial.print('\t');
+    Serial.println(state.encoderBigPosition);
+  }
+
+  if (state.encoderBigButton != statePrev.encoderBigButton)
+  {
+    Serial.print(EncoderBigButton);
+    Serial.print('\t');
+    Serial.println(state.encoderBigButton);
+  }
+
+  if (state.encoderBigOnShortPress != statePrev.encoderBigOnShortPress)
+  {
+    Serial.println(EncoderBigShortPress);
+
+    state.encoderBigOnShortPress = false;
+  }
+
+  if (state.encoderBigOnLongPress != statePrev.encoderBigOnLongPress)
+  {
+    Serial.println(EncoderBigLongPress);
+
+    state.encoderBigOnLongPress = false;
+  }
 
   if (state.encoderSmallPosition != statePrev.encoderSmallPosition)
   {

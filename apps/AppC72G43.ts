@@ -1,3 +1,4 @@
+import EventEmitter from "node:events";
 import { Button, Command, DeviceG43 } from "../devices/DeviceG43";
 import { SimC172G430 } from "../models/SimC172G430";
 
@@ -60,7 +61,7 @@ enum KeyboardTransponderLayout {
   Default = Mode,
 }
 
-export class AppC72G43 {
+export class AppC72G43 extends EventEmitter {
   #dev: DeviceG43;
   #sim: SimC172G430;
 
@@ -73,16 +74,18 @@ export class AppC72G43 {
   #encoderSmallMode = EncoderSmallMode.Default;
 
   constructor(dev: DeviceG43, sim: SimC172G430) {
+    super();
+
     this.#dev = dev;
     this.#sim = sim;
 
     this.#dev.on("button_click", ({ button }) => {
-      console.log("CLICK", button);
+      console.log("CLICK", Button[button]);
       this.#handleKeyboardClick(button, false);
     });
 
     this.#dev.on("button_long_click", ({ button }) => {
-      console.log("CLICK_LONG", button);
+      console.log("CLICK_LONG", Button[button]);
       this.#handleKeyboardClick(button, true);
     });
 
@@ -502,13 +505,17 @@ export class AppC72G43 {
       if (this.#encoderBigMode === EncoderBigMode.None) {
         // NOP
       } else if (this.#encoderBigMode === EncoderBigMode.AltPressure) {
-        // TODO: rotate alt pressure adjust
+        // rotate alt pressure adjust
+        this.#sim.interface.Avionics.AltPressure.set(position / 100);
       } else if (this.#encoderBigMode === EncoderBigMode.PitchAdjust) {
-        // TODO: rotate pitch adjust
+        // rotate pitch adjust
+        this.#sim.interface.Avionics.HorizonAdjust.set(position);
       } else if (this.#encoderBigMode === EncoderBigMode.OBS1) {
-        // TODO: rotate OBS1
+        // rotate OBS1
+        this.#sim.interface.Navigation.Nav1.set(position);
       } else if (this.#encoderBigMode === EncoderBigMode.ADFBig) {
-        // TODO: rotate ADF big
+        // rotate ADF big
+        this.#sim.interface.Navigation.ADFHeading.set(position);
       } else if (this.#encoderBigMode === EncoderBigMode.G530LeftBig) {
         // TODO: rotate G530 left big
       } else if (this.#encoderBigMode === EncoderBigMode.G530RightBig) {
@@ -622,6 +629,18 @@ export class AppC72G43 {
     console.log({ layoutTransponder: KeyboardTransponderLayout[this.#layoutTransponder] });
   }
 
+  #encoderBigSetter(valuePromise: Promise<number>) {
+    valuePromise.then((value) => {
+      this.#dev.call[Command.SetBigEncoderPosition](value);
+    });
+  }
+
+  #encoderSmallSetter(valuePromise: Promise<number>) {
+    valuePromise.then((value) => {
+      this.#dev.call[Command.SetSmallEncoderPosition](value);
+    });
+  }
+
   #selectSmallEncoderMode(mode: EncoderSmallMode) {
     this.#encoderSmallMode = mode;
 
@@ -629,29 +648,19 @@ export class AppC72G43 {
 
     if (this.#encoderSmallMode === EncoderSmallMode.HeadingBug) {
       // << heading bug position
-      this.#sim.interface.Avionics.HeadingBug.get().then((value) => {
-        this.#dev.call[Command.SetSmallEncoderPosition](value);
-      });
+      this.#encoderSmallSetter(this.#sim.interface.Avionics.HeadingBug.get());
     } else if (this.#encoderSmallMode === EncoderSmallMode.OBS2) {
       // << heading bug position
-      this.#sim.interface.Navigation.Nav2.get().then((value) => {
-        this.#dev.call[Command.SetSmallEncoderPosition](value);
-      });
+      this.#encoderSmallSetter(this.#sim.interface.Navigation.Nav2.get());
     } else if (this.#encoderSmallMode === EncoderSmallMode.GyroCompassAdjust) {
       // << heading bug position
-      this.#sim.interface.Avionics.DriftAdjust.get().then((value) => {
-        this.#dev.call[Command.SetSmallEncoderPosition](value);
-      });
+      this.#encoderSmallSetter(this.#sim.interface.Avionics.DriftAdjust.get());
     } else if (this.#encoderSmallMode === EncoderSmallMode.ADFHeading) {
       // << heading bug position
-      this.#sim.interface.Navigation.ADFHeading.get().then((value) => {
-        this.#dev.call[Command.SetSmallEncoderPosition](value);
-      });
+      this.#encoderSmallSetter(this.#sim.interface.Navigation.ADFHeading.get());
     } else if (this.#encoderSmallMode === EncoderSmallMode.Autopilot) {
       // << heading bug position
-      this.#sim.interface.Autopilot.VerticalSpeed.get().then((value) => {
-        this.#dev.call[Command.SetSmallEncoderPosition](Math.round(value / 100));
-      });
+      this.#encoderSmallSetter(this.#sim.interface.Autopilot.VerticalSpeed.get().then((val) => val * 100));
     }
 
     // FIXME: rest modes for position sync
@@ -663,7 +672,8 @@ export class AppC72G43 {
     console.log({ encoderBigMode: EncoderBigMode[this.#encoderBigMode] });
 
     if (this.#encoderBigMode === EncoderBigMode.AltPressure) {
-      // TODO: << alt pressure
+      // << alt pressure
+      this.#encoderBigSetter(this.#sim.interface.Avionics.AltPressure.get().then((val) => val * 100));
     }
 
     // FIXME: rest modes for position sync

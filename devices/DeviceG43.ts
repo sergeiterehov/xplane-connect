@@ -25,16 +25,23 @@ export enum Button {
 
 export enum Command {
   Reset = 1,
-  SetSmallEncoderPosition = 2,
+  SetBigEncoderPosition = 2,
+  SetSmallEncoderPosition = 3,
 }
 
 enum Message {
-  EncoderSmallRotate = 1,
-  EncoderSmallButton = 2,
-  EncoderSmallShortPress = 3,
-  EncoderSmallLongPress = 4,
-  KeyboardShortPress = 5,
-  KeyboardLongPress = 6,
+  EncoderBigRotate = 1,
+  EncoderBigButton = 2,
+  EncoderBigShortPress = 3,
+  EncoderBigLongPress = 4,
+
+  EncoderSmallRotate = 5,
+  EncoderSmallButton = 6,
+  EncoderSmallShortPress = 7,
+  EncoderSmallLongPress = 8,
+
+  KeyboardShortPress = 9,
+  KeyboardLongPress = 10,
 }
 
 const messageDescriptions: {
@@ -42,6 +49,21 @@ const messageDescriptions: {
     data: { name: string; type: NumberConstructor | StringConstructor }[];
   };
 } = {
+  [Message.EncoderBigRotate]: {
+    data: [
+      { name: "delta", type: Number },
+      { name: "position", type: Number },
+    ],
+  },
+  [Message.EncoderBigButton]: {
+    data: [{ name: "state", type: Number }],
+  },
+  [Message.EncoderBigShortPress]: {
+    data: [],
+  },
+  [Message.EncoderBigLongPress]: {
+    data: [],
+  },
   [Message.EncoderSmallRotate]: {
     data: [
       { name: "delta", type: Number },
@@ -127,6 +149,18 @@ export class DeviceG43 extends EventEmitter {
   #messageHandlers: {
     [K in Message]: (e: any) => void;
   } = {
+    [Message.EncoderBigRotate]: (e: { delta: number; position: number }) => {
+      this.emit("big_encoder_rotate", e);
+    },
+    [Message.EncoderBigShortPress]: () => {
+      this.emit("button_click", { button: Button.Encoder });
+    },
+    [Message.EncoderBigLongPress]: () => {
+      this.emit("button_long_click", { button: Button.Encoder });
+    },
+    [Message.EncoderBigButton]: (e: { state: number }) => {
+      // TODO: not implemented. Pressed/released state.
+    },
     [Message.EncoderSmallRotate]: (e: { delta: number; position: number }) => {
       this.emit("small_encoder_rotate", e);
     },
@@ -150,6 +184,9 @@ export class DeviceG43 extends EventEmitter {
   call = {
     [Command.Reset]: () => {
       this.#call(Command.Reset);
+    },
+    [Command.SetBigEncoderPosition]: (position: number) => {
+      this.#call(Command.SetBigEncoderPosition, position);
     },
     [Command.SetSmallEncoderPosition]: (position: number) => {
       this.#call(Command.SetSmallEncoderPosition, position);
