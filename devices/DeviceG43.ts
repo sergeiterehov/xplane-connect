@@ -44,6 +44,8 @@ enum Message {
 
   KeyboardShortPress = 9,
   KeyboardLongPress = 10,
+
+  ResistorLeft = 11,
 }
 
 const messageDescriptions: {
@@ -96,6 +98,12 @@ const messageDescriptions: {
       { name: "col", type: Number },
     ],
   },
+  [Message.ResistorLeft]: {
+    data: [
+      { name: "position", type: Number },
+      { name: "prevPosition", type: Number },
+    ],
+  },
 };
 
 interface Events {
@@ -107,6 +115,7 @@ interface Events {
   small_encoder_rotate: [{ delta: number; position: number }];
   button_click: [{ button: Button }];
   button_long_click: [{ button: Button }];
+  left_resistor: [{ position: number }];
 }
 
 export declare interface DeviceG43 {
@@ -189,6 +198,9 @@ export class DeviceG43 extends EventEmitter {
     },
     [Message.KeyboardLongPress]: (e: { row: number; col: number }) => {
       this.emit("button_long_click", { button: Button.C1_R1 + e.col * 4 + e.row });
+    },
+    [Message.ResistorLeft]: (e: { position: number; prevPosition: number }) => {
+      this.emit("left_resistor", { position: e.position });
     },
   };
 

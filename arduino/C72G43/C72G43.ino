@@ -18,6 +18,8 @@
 #define KB_COL_3 29
 #define KB_COL_4 28
 
+#define LEFT_RESISTOR A0
+
 // https://deepbluembedded.com/arduino-pcint-pin-change-interrupts/
 // #include "PinChangeInterrupt.h";
 
@@ -46,6 +48,8 @@ enum Message
 
   KeyboardShortPress = 9,
   KeyboardLongPress = 10,
+
+  ResistorLeft = 11,
 };
 
 struct State
@@ -59,6 +63,8 @@ struct State
   bool encoderSmallButton;
   bool encoderSmallOnShortPress;
   bool encoderSmallOnLongPress;
+
+  int leftResistor;
 
   /** [row][col] */
   bool kbOnShortPress[4][4];
@@ -280,10 +286,22 @@ bool processSerialInput()
   command.length = 0;
 }
 
+void processLeftResister() {
+  int current = analogRead(LEFT_RESISTOR) >> 2;
+
+  state.leftResistor = current;
+}
+
 void setup()
 {
   state.encoderSmallPosition = -0.5;
+  state.encoderBigPosition = -0.5;
+  state.leftResistor = 0;
+
   statePrev.encoderSmallPosition = -0.5;
+  statePrev.encoderBigPosition = -0.5;
+  statePrev.leftResistor = -1;
+
 
   encoderBig.btnLastState = HIGH;
   encoderSmall.btnLastState = HIGH;
@@ -300,6 +318,8 @@ void setup()
 
   pinMode(ENCODER_BIG_BTN, INPUT);
   pinMode(ENCODER_SMALL_BTN, INPUT);
+
+  pinMode(LEFT_RESISTOR, INPUT);
 
   pinMode(KB_ROW_1, OUTPUT);
   pinMode(KB_ROW_2, OUTPUT);
@@ -326,9 +346,18 @@ void loop()
 {
   processSerialInput();
 
+  processLeftResister();
   processBigEncoderButton();
   processSmallEncoderButton();
   processKeyboard();
+
+  if (state.leftResistor != statePrev.leftResistor) {
+    Serial.print(ResistorLeft);
+    Serial.print('\t');
+    Serial.print(1.0 * state.leftResistor / 256.0);
+    Serial.print('\t');
+    Serial.println(1.0 * statePrev.leftResistor / 256.0);
+  }
 
   if (state.encoderBigPosition != statePrev.encoderBigPosition)
   {

@@ -100,6 +100,15 @@ export class AppC72G43 extends EventEmitter {
     this.#dev.on("small_encoder_rotate", ({ delta, position }) => {
       this.#handleEncoderRotate(delta, position, false);
     });
+
+    this.#dev.on("left_resistor", ({ position }) => {
+      this.#handleLeftResistor(position);
+    });
+  }
+
+  #handleLeftResistor(position: number) {
+    // throttle
+    this.#sim.interface.Engine.Throttle.set(position);
   }
 
   #handleKeyboardClick(button: Button, long: boolean) {
