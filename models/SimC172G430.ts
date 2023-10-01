@@ -189,6 +189,12 @@ export class SimC172G430 {
       SelectMode: this.#makeCommand("sim/instruments/timer_mode"),
       ControlStartStop: this.#makeCommand("sim/instruments/timer_start_stop"),
     },
+
+    Control: {
+      Pitch: this.#makeDataRef("sim/joystick/yoke_pitch_ratio", "f"),
+      Roll: this.#makeDataRef("sim/joystick/yoke_roll_ratio", "f"),
+      Yaw: this.#makeDataRef("sim/joystick/yoke_heading_ratio", "f"),
+    }
   };
 
   constructor(xp: XPlane) {

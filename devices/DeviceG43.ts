@@ -27,6 +27,7 @@ export enum Command {
   Reset = 1,
   SetBigEncoderPosition = 2,
   SetSmallEncoderPosition = 3,
+  EnableAnalog = 4,
 }
 
 enum Message {
@@ -46,6 +47,8 @@ enum Message {
   KeyboardLongPress = 10,
 
   ResistorLeft = 11,
+
+  Axis = 12,
 }
 
 const messageDescriptions: {
@@ -104,6 +107,12 @@ const messageDescriptions: {
       { name: "prevPosition", type: Number },
     ],
   },
+  [Message.Axis]: {
+    data: [
+      { name: "x", type: Number },
+      { name: "y", type: Number },
+    ],
+  },
 };
 
 interface Events {
@@ -116,6 +125,7 @@ interface Events {
   button_click: [{ button: Button }];
   button_long_click: [{ button: Button }];
   left_resistor: [{ position: number }];
+  axis: [{ x: number; y: number }];
 }
 
 export declare interface DeviceG43 {
@@ -134,9 +144,14 @@ export class DeviceG43 extends EventEmitter {
   #parser: ReadlineParser;
 
   #call = (command: Command, ...args: Array<number | string>) => {
-    this.emit("log", `CALL ${Command[command]}(${args.join(", ")})`);
+    this.emit("log", `DEV CALL ${Command[command]}(${args.join(", ")})`);
 
-    this.#serial.write(`${command}\t${args.map((val) => String(val).replace("\t", "\\t")).join("\t")}\n`);
+    this.#serial.write(
+      `${command}\t${args
+        .map((val) => (typeof val === "number" ? val.toFixed(5) : String(val)).replace("\t", "\\t"))
+        .join("\t")}\n`,
+      "ascii",
+    );
   };
 
   #onMessage = (line: string) => {
@@ -202,6 +217,9 @@ export class DeviceG43 extends EventEmitter {
     [Message.ResistorLeft]: (e: { position: number; prevPosition: number }) => {
       this.emit("left_resistor", { position: e.position });
     },
+    [Message.Axis]: (e: { x: number; y: number }) => {
+      this.emit("axis", { x: e.x, y: e.y });
+    },
   };
 
   call = {
@@ -213,6 +231,9 @@ export class DeviceG43 extends EventEmitter {
     },
     [Command.SetSmallEncoderPosition]: (position: number) => {
       this.#call(Command.SetSmallEncoderPosition, position);
+    },
+    [Command.EnableAnalog]: () => {
+      this.#call(Command.EnableAnalog);
     },
   };
 

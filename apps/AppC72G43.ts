@@ -79,6 +79,7 @@ export class AppC72G43 extends EventEmitter {
 
     this.#dev.on("connected", () => {
       setTimeout(() => {
+        this.#dev.call[Command.EnableAnalog]();
         this.#selectLayout(KeyboardLayout.Primary);
       }, 100);
     });
@@ -104,6 +105,16 @@ export class AppC72G43 extends EventEmitter {
     this.#dev.on("left_resistor", ({ position }) => {
       this.#handleLeftResistor(position);
     });
+
+    this.#dev.on("axis", ({ x, y }) => {
+      this.#handleAxis(x, y);
+    });
+  }
+
+  #handleAxis(x: number, y: number) {
+    // pitch & roll
+    this.#sim.interface.Control.Roll.set(x);
+    this.#sim.interface.Control.Pitch.set(y);
   }
 
   #handleLeftResistor(position: number) {
@@ -442,9 +453,7 @@ export class AppC72G43 extends EventEmitter {
       } else if (button === Button.C4_R4) {
         // AP VS
         this.#sim.interface.Autopilot.VS();
-        this.#sim.interface.Autopilot.VerticalSpeed.get().then((value) => {
-          this.#dev.call[Command.SetBigEncoderPosition](Math.round(value / 100));
-        });
+        this.#selectBigEncoderMode(EncoderBigMode.Autopilot);
       }
     } else if (this.#layout === KeyboardLayout.Transponder) {
       // Static buttons
@@ -651,6 +660,28 @@ export class AppC72G43 extends EventEmitter {
     });
   }
 
+  #selectBigEncoderMode(mode: EncoderBigMode) {
+    this.#encoderBigMode = mode;
+
+    console.log({ encoderBigMode: EncoderBigMode[this.#encoderBigMode] });
+
+    if (this.#encoderBigMode === EncoderBigMode.AltPressure) {
+      // << alt pressure
+      this.#encoderBigSetter(this.#sim.interface.Avionics.AltPressure.get().then((val) => val * 100));
+    } else if (this.#encoderBigMode === EncoderBigMode.PitchAdjust) {
+      // << alt pressure
+      this.#encoderBigSetter(this.#sim.interface.Avionics.HorizonAdjust.get().then((val) => val * 5));
+    } else if (this.#encoderBigMode === EncoderBigMode.OBS1) {
+      // << heading bug position
+      this.#encoderBigSetter(this.#sim.interface.Navigation.Nav1.get().then((value) => -value));
+    } else if (this.#encoderBigMode === EncoderBigMode.Autopilot) {
+      // << heading bug position
+      this.#encoderBigSetter(this.#sim.interface.Autopilot.VerticalSpeed.get().then((val) => val / 100));
+    }
+
+    // FIXME: rest modes for position sync
+  }
+
   #selectSmallEncoderMode(mode: EncoderSmallMode) {
     this.#encoderSmallMode = mode;
 
@@ -668,28 +699,6 @@ export class AppC72G43 extends EventEmitter {
     } else if (this.#encoderSmallMode === EncoderSmallMode.ADFHeading) {
       // << heading bug position
       this.#encoderSmallSetter(this.#sim.interface.Navigation.ADFHeading.get().then((value) => -value));
-    }
-
-    // FIXME: rest modes for position sync
-  }
-
-  #selectBigEncoderMode(mode: EncoderBigMode) {
-    this.#encoderBigMode = mode;
-
-    console.log({ encoderBigMode: EncoderBigMode[this.#encoderBigMode] });
-
-    if (this.#encoderBigMode === EncoderBigMode.AltPressure) {
-      // << alt pressure
-      this.#encoderBigSetter(this.#sim.interface.Avionics.AltPressure.get().then((val) => val * 100));
-    } else if (this.#encoderBigMode === EncoderBigMode.PitchAdjust) {
-      // << alt pressure
-      this.#encoderBigSetter(this.#sim.interface.Avionics.HorizonAdjust.get().then((val) => val * 5));
-    } else if (this.#encoderBigMode === EncoderBigMode.OBS1) {
-      // << heading bug position
-      this.#encoderBigSetter(this.#sim.interface.Navigation.Nav1.get().then((value) => -value));
-    } else if (this.#encoderBigMode === EncoderBigMode.Autopilot) {
-      // << heading bug position
-      this.#encoderBigSetter(this.#sim.interface.Autopilot.VerticalSpeed.get().then((val) => val * 100));
     }
 
     // FIXME: rest modes for position sync

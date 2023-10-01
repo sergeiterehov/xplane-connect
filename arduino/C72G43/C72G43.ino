@@ -20,6 +20,9 @@
 
 #define LEFT_RESISTOR A0
 
+#define AXIS_X A2
+#define AXIS_Y A1
+
 // https://deepbluembedded.com/arduino-pcint-pin-change-interrupts/
 // #include "PinChangeInterrupt.h";
 
@@ -30,6 +33,7 @@ enum Command
   Reset = 1,
   SetBigEncoderPosition = 2,
   SetSmallEncoderPosition = 3,
+  EnableAnalog = 4,
 };
 
 enum Message
@@ -50,6 +54,8 @@ enum Message
   KeyboardLongPress = 10,
 
   ResistorLeft = 11,
+
+  Axis = 12,
 };
 
 struct State
@@ -66,6 +72,9 @@ struct State
 
   int leftResistor;
 
+  int x;
+  int y;
+
   /** [row][col] */
   bool kbOnShortPress[4][4];
   /** [row][col] */
@@ -74,6 +83,8 @@ struct State
 
 struct State state;
 struct State statePrev;
+
+bool analogEnabled = false;
 
 struct
 {
@@ -241,11 +252,6 @@ void processKeyboard()
 
 bool tryReadCommand()
 {
-  if (!Serial.available())
-  {
-    return false;
-  }
-
   while (Serial.available())
   {
     char current = Serial.read();
@@ -268,7 +274,22 @@ bool processSerialInput()
     return;
   }
 
-  if (command.buffer[0] == '0' + SetBigEncoderPosition)
+  if (!command.length)
+  {
+    return;
+  }
+
+  // atof() requires format 0.0 with decimal part
+
+  if (command.buffer[0] == '0' + Reset)
+  {
+    // NOP
+  }
+  else if (command.buffer[0] == '0' + EnableAnalog)
+  {
+    analogEnabled = true;
+  }
+  else if (command.buffer[0] == '0' + SetBigEncoderPosition)
   {
     float position = atof(&command.buffer[2]);
 
@@ -286,10 +307,20 @@ bool processSerialInput()
   command.length = 0;
 }
 
-void processLeftResister() {
+void processLeftResister()
+{
   int current = analogRead(LEFT_RESISTOR) >> 2;
 
   state.leftResistor = current;
+}
+
+void processAxis()
+{
+  int x = analogRead(AXIS_X);
+  int y = analogRead(AXIS_Y);
+
+  state.x = -(x - 511) >> 2;
+  state.y = (y - 511) >> 2;
 }
 
 void setup()
@@ -301,7 +332,6 @@ void setup()
   statePrev.encoderSmallPosition = -0.5;
   statePrev.encoderBigPosition = -0.5;
   statePrev.leftResistor = -1;
-
 
   encoderBig.btnLastState = HIGH;
   encoderSmall.btnLastState = HIGH;
@@ -320,6 +350,9 @@ void setup()
   pinMode(ENCODER_SMALL_BTN, INPUT);
 
   pinMode(LEFT_RESISTOR, INPUT);
+
+  pinMode(AXIS_X, INPUT);
+  pinMode(AXIS_Y, INPUT);
 
   pinMode(KB_ROW_1, OUTPUT);
   pinMode(KB_ROW_2, OUTPUT);
@@ -346,17 +379,32 @@ void loop()
 {
   processSerialInput();
 
-  processLeftResister();
+  if (analogEnabled)
+  {
+    processAxis();
+    processLeftResister();
+  }
+
   processBigEncoderButton();
   processSmallEncoderButton();
   processKeyboard();
 
-  if (state.leftResistor != statePrev.leftResistor) {
+  if (state.x != statePrev.x || state.y != statePrev.y)
+  {
+    Serial.print(Axis);
+    Serial.print('\t');
+    Serial.print(state.x / 128.0);
+    Serial.print('\t');
+    Serial.println(state.y / 128.0);
+  }
+
+  if (state.leftResistor != statePrev.leftResistor)
+  {
     Serial.print(ResistorLeft);
     Serial.print('\t');
-    Serial.print(1.0 * state.leftResistor / 256.0);
+    Serial.print(state.leftResistor / 256.0);
     Serial.print('\t');
-    Serial.println(1.0 * statePrev.leftResistor / 256.0);
+    Serial.println(statePrev.leftResistor / 256.0);
   }
 
   if (state.encoderBigPosition != statePrev.encoderBigPosition)
