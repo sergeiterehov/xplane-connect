@@ -32,6 +32,8 @@ enum Command
 
 enum Message
 {
+  Ready = 0,
+
   EncoderBigRotate = 1,
   EncoderBigButton = 2,
   EncoderBigShortPress = 3,
@@ -316,6 +318,8 @@ void setup()
   attachInterrupt(digitalPinToInterrupt(ENCODER_SMALL_B), intEncoderSmall, CHANGE);
 
   Serial.begin(115200);
+
+  Serial.println(Ready);
 }
 
 void loop()

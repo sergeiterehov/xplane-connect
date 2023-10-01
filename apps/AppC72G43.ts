@@ -3,15 +3,14 @@ import { Button, Command, DeviceG43 } from "../devices/DeviceG43";
 import { SimC172G430 } from "../models/SimC172G430";
 
 enum KeyboardLayout {
-  Avionics = 10,
-  Systems = 11,
+  Primary = 10,
+  Adjust = 11,
   Navigation = 20,
   ADF = 21,
   G530 = 30,
   G430 = 31,
   Autopilot = 40,
   Transponder = 41,
-  Default = Avionics,
 }
 
 enum EncoderBigMode {
@@ -24,7 +23,7 @@ enum EncoderBigMode {
   G530RightBig,
   G430LeftBig,
   G430RightBig,
-  Default = None,
+  Autopilot,
 }
 
 enum EncoderSmallMode {
@@ -38,46 +37,51 @@ enum EncoderSmallMode {
   G530RightSmall,
   G430LeftSmall,
   G430RightSmall,
-  Autopilot,
-  Default = None,
 }
 
-enum KeyboardSystemLayout {
+enum KeyboardAdjustLayout {
   Engine,
   Electro,
   Light,
-  Default = Engine,
 }
 
 enum KeyboardGx30Layout {
   Left,
   Right,
-  Default = Left,
 }
 
 enum KeyboardTransponderLayout {
   Mode,
   Code,
-  Default = Mode,
 }
 
 export class AppC72G43 extends EventEmitter {
   #dev: DeviceG43;
   #sim: SimC172G430;
 
-  #layout = KeyboardLayout.Default;
-  #layoutSystem = KeyboardSystemLayout.Default;
-  #layoutGx30 = KeyboardGx30Layout.Default;
-  #layoutTransponder = KeyboardTransponderLayout.Default;
+  #layout = KeyboardLayout.Primary;
+  #layoutAdjust = KeyboardAdjustLayout.Engine;
+  #layoutGx30 = KeyboardGx30Layout.Left;
+  #layoutTransponder = KeyboardTransponderLayout.Mode;
 
-  #encoderBigMode = EncoderBigMode.Default;
-  #encoderSmallMode = EncoderSmallMode.Default;
+  #encoderBigMode = EncoderBigMode.None;
+  #encoderSmallMode = EncoderSmallMode.None;
 
   constructor(dev: DeviceG43, sim: SimC172G430) {
     super();
 
     this.#dev = dev;
     this.#sim = sim;
+
+    this.#sim.interface.Avionics.Compass.get().then((value) => {
+      console.log(`Sim ready. Compass: ${value}`);
+    });
+
+    this.#dev.on("connected", () => {
+      setTimeout(() => {
+        this.#selectLayout(KeyboardLayout.Primary);
+      }, 100);
+    });
 
     this.#dev.on("button_click", ({ button }) => {
       console.log("CLICK", Button[button]);
@@ -102,9 +106,9 @@ export class AppC72G43 extends EventEmitter {
     // Mode selection
     if (button === Button.C1_R1) {
       if (long) {
-        this.#selectLayout(KeyboardLayout.Systems);
+        this.#selectLayout(KeyboardLayout.Adjust);
       } else {
-        this.#selectLayout(KeyboardLayout.Avionics);
+        this.#selectLayout(KeyboardLayout.Primary);
       }
     } else if (button === Button.C1_R2) {
       if (long) {
@@ -126,59 +130,19 @@ export class AppC72G43 extends EventEmitter {
       }
     }
     // Each mode
-    else if (this.#layout === KeyboardLayout.Avionics) {
-      if (button === Button.Encoder) {
-        // NOP
-      } else if (button === Button.C2_R1) {
-        // flaps up
-        this.#sim.interface.Flaps.Ratio.set(0);
-      } else if (button === Button.C2_R2) {
-        // flaps 10
-        this.#sim.interface.Flaps.Ratio.set(0.333);
-      } else if (button === Button.C2_R3) {
-        // flaps 20
-        this.#sim.interface.Flaps.Ratio.set(0.666);
-      } else if (button === Button.C2_R4) {
-        // flaps full
-        this.#sim.interface.Flaps.Ratio.set(1);
-      } else if (button === Button.C3_R1) {
-        // chron mode
-        this.#sim.interface.Timer.SelectMode();
-      } else if (button === Button.C3_R2) {
-        // toggle lending light
-        this.#sim.interface.Light.Landing();
-      } else if (button === Button.C3_R3) {
-        // break normal
-        this.#sim.interface.Brakes.Regular();
-      } else if (button === Button.C3_R4) {
-        // break max
-        this.#sim.interface.Brakes.Max();
-      } else if (button === Button.C4_R1) {
-        // timer start/stop
-        this.#sim.interface.Timer.ControlStartStop();
-      } else if (button === Button.C4_R2) {
-        // toggle taxi light
-        this.#sim.interface.Light.Taxi();
-      } else if (button === Button.C4_R3) {
-        // trim nose down
-        this.#sim.interface.Trim.Down();
-      } else if (button === Button.C4_R4) {
-        // trim nose up
-        this.#sim.interface.Trim.Up();
-      }
-    } else if (this.#layout === KeyboardLayout.Systems) {
+    else if (this.#layout === KeyboardLayout.Primary) {
       // Sub mode selection
       if (button === Button.C2_R1) {
-        this.#selectSystemLayout(KeyboardSystemLayout.Engine);
+        this.#selectAdjustLayout(KeyboardAdjustLayout.Engine);
       } else if (button === Button.C2_R2) {
-        this.#selectSystemLayout(KeyboardSystemLayout.Electro);
+        this.#selectAdjustLayout(KeyboardAdjustLayout.Electro);
       } else if (button === Button.C2_R3) {
-        this.#selectSystemLayout(KeyboardSystemLayout.Light);
+        this.#selectAdjustLayout(KeyboardAdjustLayout.Light);
       } else if (button === Button.C2_R4) {
         // NOP
       }
       // Each sub mode
-      else if (this.#layoutSystem === KeyboardSystemLayout.Engine) {
+      else if (this.#layoutAdjust === KeyboardAdjustLayout.Engine) {
         if (button === Button.Encoder) {
           // NOP
         } else if (button === Button.C3_R1) {
@@ -206,7 +170,7 @@ export class AppC72G43 extends EventEmitter {
           // TODO: tank shutoff
           // For what?
         }
-      } else if (this.#layoutSystem === KeyboardSystemLayout.Electro) {
+      } else if (this.#layoutAdjust === KeyboardAdjustLayout.Electro) {
         if (button === Button.Encoder) {
           // NOP
         } else if (button === Button.C3_R1) {
@@ -230,7 +194,7 @@ export class AppC72G43 extends EventEmitter {
         } else if (button === Button.C4_R4) {
           // NOP
         }
-      } else if (this.#layoutSystem === KeyboardSystemLayout.Light) {
+      } else if (this.#layoutAdjust === KeyboardAdjustLayout.Light) {
         if (button === Button.Encoder) {
           // NOP
         } else if (button === Button.C3_R1) {
@@ -255,6 +219,46 @@ export class AppC72G43 extends EventEmitter {
         } else if (button === Button.C4_R4) {
           // NOP
         }
+      }
+    } else if (this.#layout === KeyboardLayout.Adjust) {
+      if (button === Button.Encoder) {
+        // NOP
+      } else if (button === Button.C2_R1) {
+        // flaps up
+        this.#sim.interface.Flaps.Ratio.set(0);
+      } else if (button === Button.C2_R2) {
+        // flaps 10
+        this.#sim.interface.Flaps.Ratio.set(0.333);
+      } else if (button === Button.C2_R3) {
+        // flaps 20
+        this.#sim.interface.Flaps.Ratio.set(0.666);
+      } else if (button === Button.C2_R4) {
+        // flaps full
+        this.#sim.interface.Flaps.Ratio.set(1);
+      } else if (button === Button.C3_R1) {
+        // toggle taxi light
+        this.#sim.interface.Light.Taxi();
+      } else if (button === Button.C3_R2) {
+        // toggle lending light
+        this.#sim.interface.Light.Landing();
+      } else if (button === Button.C3_R3) {
+        // break normal
+        this.#sim.interface.Brakes.Regular();
+      } else if (button === Button.C3_R4) {
+        // break max
+        this.#sim.interface.Brakes.Max();
+      } else if (button === Button.C4_R1) {
+        // timer start/stop
+        this.#sim.interface.Timer.ControlStartStop();
+      } else if (button === Button.C4_R2) {
+        // chron mode
+        this.#sim.interface.Timer.SelectMode();
+      } else if (button === Button.C4_R3) {
+        // trim nose down
+        this.#sim.interface.Trim.Down();
+      } else if (button === Button.C4_R4) {
+        // trim nose up
+        this.#sim.interface.Trim.Up();
       }
     } else if (this.#layout === KeyboardLayout.ADF) {
       if (button === Button.Encoder) {
@@ -430,7 +434,7 @@ export class AppC72G43 extends EventEmitter {
         // AP VS
         this.#sim.interface.Autopilot.VS();
         this.#sim.interface.Autopilot.VerticalSpeed.get().then((value) => {
-          this.#dev.call[Command.SetSmallEncoderPosition](Math.round(value / 100));
+          this.#dev.call[Command.SetBigEncoderPosition](Math.round(value / 100));
         });
       }
     } else if (this.#layout === KeyboardLayout.Transponder) {
@@ -512,10 +516,9 @@ export class AppC72G43 extends EventEmitter {
         this.#sim.interface.Avionics.HorizonAdjust.set(position / 5);
       } else if (this.#encoderBigMode === EncoderBigMode.OBS1) {
         // rotate OBS1
-        this.#sim.interface.Navigation.Nav1.set(position);
+        this.#sim.interface.Navigation.Nav1.set(-position % 360);
       } else if (this.#encoderBigMode === EncoderBigMode.ADFBig) {
-        // rotate ADF big
-        this.#sim.interface.Navigation.ADFHeading.set(position);
+        // TODO: rotate ADF big
       } else if (this.#encoderBigMode === EncoderBigMode.G530LeftBig) {
         // TODO: rotate G530 left big
       } else if (this.#encoderBigMode === EncoderBigMode.G530RightBig) {
@@ -524,22 +527,25 @@ export class AppC72G43 extends EventEmitter {
         // TODO: rotate G430 left big
       } else if (this.#encoderBigMode === EncoderBigMode.G430RightBig) {
         // TODO: rotate G430 right big
+      } else if (this.#encoderBigMode === EncoderBigMode.Autopilot) {
+        // rotate ap vs
+        this.#sim.interface.Autopilot.VerticalSpeed.set(Math.round(position) * 100);
       }
     } else {
       if (this.#encoderSmallMode === EncoderSmallMode.None) {
         // NOP
       } else if (this.#encoderSmallMode === EncoderSmallMode.HeadingBug) {
         // move heading bug
-        this.#sim.interface.Avionics.HeadingBug.set(position);
+        this.#sim.interface.Avionics.HeadingBug.set(position % 360);
       } else if (this.#encoderSmallMode === EncoderSmallMode.GyroCompassAdjust) {
         // adjust gyro compass
-        this.#sim.interface.Avionics.DriftAdjust.set(position);
+        this.#sim.interface.Avionics.DriftAdjust.set(position % 360);
       } else if (this.#encoderSmallMode === EncoderSmallMode.OBS2) {
         // rotate OBS2
-        this.#sim.interface.Navigation.Nav2.set(position);
+        this.#sim.interface.Navigation.Nav2.set(-position % 360);
       } else if (this.#encoderSmallMode === EncoderSmallMode.ADFHeading) {
         // rotate ADF heading
-        this.#sim.interface.Navigation.ADFHeading.set(position);
+        this.#sim.interface.Navigation.ADFHeading.set(-position % 360);
       } else if (this.#encoderSmallMode === EncoderSmallMode.ADFSmall) {
         // TODO: rotate ADF small
       } else if (this.#encoderSmallMode === EncoderSmallMode.G530LeftSmall) {
@@ -550,9 +556,6 @@ export class AppC72G43 extends EventEmitter {
         // TODO: rotate G430 left small
       } else if (this.#encoderSmallMode === EncoderSmallMode.G430RightSmall) {
         // TODO: rotate G430 right small
-      } else if (this.#encoderSmallMode === EncoderSmallMode.Autopilot) {
-        // rotate ap vs
-        this.#sim.interface.Autopilot.VerticalSpeed.set(Math.round(position) * 100);
       }
     }
   }
@@ -562,16 +565,11 @@ export class AppC72G43 extends EventEmitter {
 
     console.log({ layout: KeyboardLayout[this.#layout] });
 
-    this.#layoutSystem = KeyboardSystemLayout.Default;
-    this.#layoutGx30 = KeyboardGx30Layout.Default;
-    this.#layoutTransponder = KeyboardTransponderLayout.Default;
-
-    if (layout === KeyboardLayout.Avionics) {
+    if (layout === KeyboardLayout.Primary) {
       this.#selectBigEncoderMode(EncoderBigMode.AltPressure);
       this.#selectSmallEncoderMode(EncoderSmallMode.HeadingBug);
-    } else if (layout === KeyboardLayout.Systems) {
-      this.#selectBigEncoderMode(EncoderBigMode.PitchAdjust);
-      this.#selectSmallEncoderMode(EncoderSmallMode.GyroCompassAdjust);
+    } else if (layout === KeyboardLayout.Adjust) {
+      this.#selectAdjustLayout(KeyboardAdjustLayout.Engine);
     } else if (layout === KeyboardLayout.Navigation) {
       this.#selectBigEncoderMode(EncoderBigMode.OBS1);
       this.#selectSmallEncoderMode(EncoderSmallMode.OBS2);
@@ -579,24 +577,24 @@ export class AppC72G43 extends EventEmitter {
       this.#selectBigEncoderMode(EncoderBigMode.None);
       this.#selectSmallEncoderMode(EncoderSmallMode.ADFHeading);
     } else if (layout === KeyboardLayout.G530) {
-      this.#selectBigEncoderMode(EncoderBigMode.G530LeftBig);
-      this.#selectSmallEncoderMode(EncoderSmallMode.G530LeftSmall);
+      this.#selectGx30Layout(KeyboardGx30Layout.Left);
     } else if (layout === KeyboardLayout.G430) {
-      this.#selectBigEncoderMode(EncoderBigMode.G430LeftBig);
-      this.#selectSmallEncoderMode(EncoderSmallMode.G430LeftSmall);
+      this.#selectGx30Layout(KeyboardGx30Layout.Left);
     } else if (layout === KeyboardLayout.Autopilot) {
-      this.#selectBigEncoderMode(EncoderBigMode.None);
-      this.#selectSmallEncoderMode(EncoderSmallMode.Autopilot);
+      this.#selectBigEncoderMode(EncoderBigMode.Autopilot);
+      this.#selectSmallEncoderMode(EncoderSmallMode.HeadingBug);
     } else if (layout === KeyboardLayout.Transponder) {
-      this.#selectBigEncoderMode(EncoderBigMode.None);
-      this.#selectSmallEncoderMode(EncoderSmallMode.None);
+      this.#selectTransponderLayout(KeyboardTransponderLayout.Mode);
     }
   }
 
-  #selectSystemLayout(layout: KeyboardSystemLayout) {
-    this.#layoutSystem = layout;
+  #selectAdjustLayout(layout: KeyboardAdjustLayout) {
+    this.#layoutAdjust = layout;
 
-    console.log({ layoutSystem: KeyboardSystemLayout[this.#layoutSystem] });
+    console.log({ layoutAdjust: KeyboardAdjustLayout[this.#layoutAdjust] });
+
+    this.#selectBigEncoderMode(EncoderBigMode.PitchAdjust);
+    this.#selectSmallEncoderMode(EncoderSmallMode.GyroCompassAdjust);
   }
 
   #selectGx30Layout(layout: KeyboardGx30Layout) {
@@ -627,6 +625,9 @@ export class AppC72G43 extends EventEmitter {
     this.#layoutTransponder = layout;
 
     console.log({ layoutTransponder: KeyboardTransponderLayout[this.#layoutTransponder] });
+
+    this.#selectBigEncoderMode(EncoderBigMode.None);
+    this.#selectSmallEncoderMode(EncoderSmallMode.None);
   }
 
   #encoderBigSetter(valuePromise: Promise<number>) {
@@ -651,16 +652,13 @@ export class AppC72G43 extends EventEmitter {
       this.#encoderSmallSetter(this.#sim.interface.Avionics.HeadingBug.get());
     } else if (this.#encoderSmallMode === EncoderSmallMode.OBS2) {
       // << heading bug position
-      this.#encoderSmallSetter(this.#sim.interface.Navigation.Nav2.get());
+      this.#encoderSmallSetter(this.#sim.interface.Navigation.Nav2.get().then((value) => -value));
     } else if (this.#encoderSmallMode === EncoderSmallMode.GyroCompassAdjust) {
       // << heading bug position
       this.#encoderSmallSetter(this.#sim.interface.Avionics.DriftAdjust.get());
     } else if (this.#encoderSmallMode === EncoderSmallMode.ADFHeading) {
       // << heading bug position
-      this.#encoderSmallSetter(this.#sim.interface.Navigation.ADFHeading.get());
-    } else if (this.#encoderSmallMode === EncoderSmallMode.Autopilot) {
-      // << heading bug position
-      this.#encoderSmallSetter(this.#sim.interface.Autopilot.VerticalSpeed.get().then((val) => val * 100));
+      this.#encoderSmallSetter(this.#sim.interface.Navigation.ADFHeading.get().then((value) => -value));
     }
 
     // FIXME: rest modes for position sync
@@ -677,6 +675,12 @@ export class AppC72G43 extends EventEmitter {
     } else if (this.#encoderBigMode === EncoderBigMode.PitchAdjust) {
       // << alt pressure
       this.#encoderBigSetter(this.#sim.interface.Avionics.HorizonAdjust.get().then((val) => val * 5));
+    } else if (this.#encoderBigMode === EncoderBigMode.OBS1) {
+      // << heading bug position
+      this.#encoderBigSetter(this.#sim.interface.Navigation.Nav1.get().then((value) => -value));
+    } else if (this.#encoderBigMode === EncoderBigMode.Autopilot) {
+      // << heading bug position
+      this.#encoderBigSetter(this.#sim.interface.Autopilot.VerticalSpeed.get().then((val) => val * 100));
     }
 
     // FIXME: rest modes for position sync

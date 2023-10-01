@@ -30,6 +30,8 @@ export enum Command {
 }
 
 enum Message {
+  Ready = 0,
+
   EncoderBigRotate = 1,
   EncoderBigButton = 2,
   EncoderBigShortPress = 3,
@@ -49,6 +51,9 @@ const messageDescriptions: {
     data: { name: string; type: NumberConstructor | StringConstructor }[];
   };
 } = {
+  [Message.Ready]: {
+    data: [],
+  },
   [Message.EncoderBigRotate]: {
     data: [
       { name: "delta", type: Number },
@@ -95,6 +100,8 @@ const messageDescriptions: {
 
 interface Events {
   log: [string];
+
+  connected: [];
 
   big_encoder_rotate: [{ delta: number; position: number }];
   small_encoder_rotate: [{ delta: number; position: number }];
@@ -149,6 +156,10 @@ export class DeviceG43 extends EventEmitter {
   #messageHandlers: {
     [K in Message]: (e: any) => void;
   } = {
+    [Message.Ready]: () => {
+      this.emit("log", "Device ready");
+      this.emit("connected");
+    },
     [Message.EncoderBigRotate]: (e: { delta: number; position: number }) => {
       this.emit("big_encoder_rotate", e);
     },
