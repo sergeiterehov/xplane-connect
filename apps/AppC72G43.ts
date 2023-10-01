@@ -431,7 +431,8 @@ export class AppC72G43 extends EventEmitter {
       } else if (button === Button.C2_R3) {
         // NOP
       } else if (button === Button.C2_R4) {
-        // NOP
+        // disengage
+        this.#sim.interface.Autopilot.Disengage();
       } else if (button === Button.C3_R1) {
         // AP NAV
         this.#sim.interface.Autopilot.NAV();
