@@ -67,6 +67,29 @@ export class AppC72G43 extends EventEmitter {
   #encoderBigMode = EncoderBigMode.None;
   #encoderSmallMode = EncoderSmallMode.None;
 
+  #bigEncoderReader?: (position: number) => void;
+  #smallEncoderReader?: (position: number) => void;
+
+  #encoderBigProvider(getter: () => Promise<number>, setter: (position: number) => void) {
+    this.#bigEncoderReader = undefined;
+
+    getter().then((value) => {
+      this.#dev.call[Command.SetBigEncoderPosition](value);
+    });
+
+    this.#bigEncoderReader = setter;
+  }
+
+  #encoderSmallProvider(getter: () => Promise<number>, setter: (position: number) => void) {
+    this.#smallEncoderReader = undefined;
+
+    getter().then((value) => {
+      this.#dev.call[Command.SetSmallEncoderPosition](value);
+    });
+
+    this.#smallEncoderReader = setter;
+  }
+
   constructor(dev: DeviceG43, sim: SimC172G430) {
     super();
 
@@ -531,57 +554,101 @@ export class AppC72G43 extends EventEmitter {
 
   #handleEncoderRotate(delta: number, position: number, big: boolean) {
     if (big) {
-      if (this.#encoderBigMode === EncoderBigMode.None) {
-        // NOP
-      } else if (this.#encoderBigMode === EncoderBigMode.AltPressure) {
-        // rotate alt pressure adjust
-        this.#sim.interface.Avionics.AltPressure.set(position / 100);
-      } else if (this.#encoderBigMode === EncoderBigMode.PitchAdjust) {
-        // rotate pitch adjust
-        this.#sim.interface.Avionics.HorizonAdjust.set(position / 5);
-      } else if (this.#encoderBigMode === EncoderBigMode.OBS1) {
-        // rotate OBS1
-        this.#sim.interface.Navigation.Nav1.set(-position % 360);
-      } else if (this.#encoderBigMode === EncoderBigMode.ADFBig) {
-        // TODO: rotate ADF big
-      } else if (this.#encoderBigMode === EncoderBigMode.G530LeftBig) {
-        // TODO: rotate G530 left big
-      } else if (this.#encoderBigMode === EncoderBigMode.G530RightBig) {
-        // TODO: rotate G530 right big
-      } else if (this.#encoderBigMode === EncoderBigMode.G430LeftBig) {
-        // TODO: rotate G430 left big
-      } else if (this.#encoderBigMode === EncoderBigMode.G430RightBig) {
-        // TODO: rotate G430 right big
-      } else if (this.#encoderBigMode === EncoderBigMode.Autopilot) {
-        // rotate ap vs
-        this.#sim.interface.Autopilot.VerticalSpeed.set(Math.round(position) * 100);
-      }
+      this.#bigEncoderReader?.(position);
     } else {
-      if (this.#encoderSmallMode === EncoderSmallMode.None) {
-        // NOP
-      } else if (this.#encoderSmallMode === EncoderSmallMode.HeadingBug) {
-        // move heading bug
-        this.#sim.interface.Avionics.HeadingBug.set(position % 360);
-      } else if (this.#encoderSmallMode === EncoderSmallMode.GyroCompassAdjust) {
-        // adjust gyro compass
-        this.#sim.interface.Avionics.DriftAdjust.set(position % 360);
-      } else if (this.#encoderSmallMode === EncoderSmallMode.OBS2) {
-        // rotate OBS2
-        this.#sim.interface.Navigation.Nav2.set(-position % 360);
-      } else if (this.#encoderSmallMode === EncoderSmallMode.ADFHeading) {
-        // rotate ADF heading
-        this.#sim.interface.Navigation.ADFHeading.set(-position % 360);
-      } else if (this.#encoderSmallMode === EncoderSmallMode.ADFSmall) {
-        // TODO: rotate ADF small
-      } else if (this.#encoderSmallMode === EncoderSmallMode.G530LeftSmall) {
-        // TODO: rotate G530 left small
-      } else if (this.#encoderSmallMode === EncoderSmallMode.G530RightSmall) {
-        // TODO: rotate G530 right small
-      } else if (this.#encoderSmallMode === EncoderSmallMode.G430LeftSmall) {
-        // TODO: rotate G430 left small
-      } else if (this.#encoderSmallMode === EncoderSmallMode.G430RightSmall) {
-        // TODO: rotate G430 right small
-      }
+      this.#smallEncoderReader?.(position);
+    }
+  }
+
+  #selectBigEncoderMode(mode: EncoderBigMode) {
+    this.#encoderBigMode = mode;
+
+    console.log({ encoderBigMode: EncoderBigMode[this.#encoderBigMode] });
+
+    if (this.#encoderBigMode === EncoderBigMode.None) {
+      // NOP
+    } else if (this.#encoderBigMode === EncoderBigMode.AltPressure) {
+      // rotate alt pressure adjust
+      this.#encoderBigProvider(
+        () => this.#sim.interface.Avionics.AltPressure.get().then((val) => val * 100),
+        (position) => this.#sim.interface.Avionics.AltPressure.set(position / 100),
+      );
+    } else if (this.#encoderBigMode === EncoderBigMode.PitchAdjust) {
+      // rotate pitch adjust
+      this.#encoderBigProvider(
+        () => this.#sim.interface.Avionics.HorizonAdjust.get().then((val) => val * 5),
+        (position) => this.#sim.interface.Avionics.HorizonAdjust.set(position / 5),
+      );
+    } else if (this.#encoderBigMode === EncoderBigMode.OBS1) {
+      // rotate OBS1
+      this.#encoderBigProvider(
+        () => this.#sim.interface.Navigation.Nav1.get().then((value) => -value),
+        (position) => this.#sim.interface.Navigation.Nav1.set(-position % 360),
+      );
+    } else if (this.#encoderBigMode === EncoderBigMode.ADFBig) {
+      // TODO: rotate ADF big
+    } else if (this.#encoderBigMode === EncoderBigMode.G530LeftBig) {
+      // TODO: rotate G530 left big
+    } else if (this.#encoderBigMode === EncoderBigMode.G530RightBig) {
+      // TODO: rotate G530 right big
+    } else if (this.#encoderBigMode === EncoderBigMode.G430LeftBig) {
+      // TODO: rotate G430 left big
+    } else if (this.#encoderBigMode === EncoderBigMode.G430RightBig) {
+      // TODO: rotate G430 right big
+    } else if (this.#encoderBigMode === EncoderBigMode.Autopilot) {
+      // rotate ap vs
+      this.#encoderBigProvider(
+        () => this.#sim.interface.Autopilot.VerticalSpeed.get().then((val) => val / 100),
+        (position) => this.#sim.interface.Autopilot.VerticalSpeed.set(Math.round(position) * 100),
+      );
+    } else {
+      this.#bigEncoderReader = undefined;
+    }
+  }
+
+  #selectSmallEncoderMode(mode: EncoderSmallMode) {
+    this.#encoderSmallMode = mode;
+
+    console.log({ encoderSmallMode: EncoderSmallMode[this.#encoderSmallMode] });
+
+    if (this.#encoderSmallMode === EncoderSmallMode.None) {
+      // NOP
+    } else if (this.#encoderSmallMode === EncoderSmallMode.HeadingBug) {
+      // move heading bug
+      this.#encoderSmallProvider(
+        () => this.#sim.interface.Avionics.HeadingBug.get(),
+        (position) => this.#sim.interface.Avionics.HeadingBug.set(position % 360),
+      );
+    } else if (this.#encoderSmallMode === EncoderSmallMode.GyroCompassAdjust) {
+      // adjust gyro compass
+      this.#encoderSmallProvider(
+        () => this.#sim.interface.Avionics.DriftAdjust.get(),
+        (position) => this.#sim.interface.Avionics.DriftAdjust.set(position % 360),
+      );
+    } else if (this.#encoderSmallMode === EncoderSmallMode.OBS2) {
+      // rotate OBS2
+      this.#encoderSmallProvider(
+        () => this.#sim.interface.Navigation.Nav2.get().then((value) => -value),
+        (position) => this.#sim.interface.Navigation.Nav2.set(-position % 360),
+      );
+    } else if (this.#encoderSmallMode === EncoderSmallMode.ADFHeading) {
+      // rotate ADF heading
+      this.#encoderSmallProvider(
+        () => this.#sim.interface.Navigation.ADFHeading.get().then((value) => -value),
+        (position) => this.#sim.interface.Navigation.ADFHeading.set(-position % 360),
+      );
+    } else if (this.#encoderSmallMode === EncoderSmallMode.ADFSmall) {
+      // TODO: rotate ADF small
+    } else if (this.#encoderSmallMode === EncoderSmallMode.G530LeftSmall) {
+      // TODO: rotate G530 left small
+    } else if (this.#encoderSmallMode === EncoderSmallMode.G530RightSmall) {
+      // TODO: rotate G530 right small
+    } else if (this.#encoderSmallMode === EncoderSmallMode.G430LeftSmall) {
+      // TODO: rotate G430 left small
+    } else if (this.#encoderSmallMode === EncoderSmallMode.G430RightSmall) {
+      // TODO: rotate G430 right small
+    } else {
+      this.#smallEncoderReader = undefined;
     }
   }
 
@@ -653,61 +720,5 @@ export class AppC72G43 extends EventEmitter {
 
     this.#selectBigEncoderMode(EncoderBigMode.None);
     this.#selectSmallEncoderMode(EncoderSmallMode.None);
-  }
-
-  #encoderBigSetter(valuePromise: Promise<number>) {
-    valuePromise.then((value) => {
-      this.#dev.call[Command.SetBigEncoderPosition](value);
-    });
-  }
-
-  #encoderSmallSetter(valuePromise: Promise<number>) {
-    valuePromise.then((value) => {
-      this.#dev.call[Command.SetSmallEncoderPosition](value);
-    });
-  }
-
-  #selectBigEncoderMode(mode: EncoderBigMode) {
-    this.#encoderBigMode = mode;
-
-    console.log({ encoderBigMode: EncoderBigMode[this.#encoderBigMode] });
-
-    if (this.#encoderBigMode === EncoderBigMode.AltPressure) {
-      // << alt pressure
-      this.#encoderBigSetter(this.#sim.interface.Avionics.AltPressure.get().then((val) => val * 100));
-    } else if (this.#encoderBigMode === EncoderBigMode.PitchAdjust) {
-      // << alt pressure
-      this.#encoderBigSetter(this.#sim.interface.Avionics.HorizonAdjust.get().then((val) => val * 5));
-    } else if (this.#encoderBigMode === EncoderBigMode.OBS1) {
-      // << heading bug position
-      this.#encoderBigSetter(this.#sim.interface.Navigation.Nav1.get().then((value) => -value));
-    } else if (this.#encoderBigMode === EncoderBigMode.Autopilot) {
-      // << heading bug position
-      this.#encoderBigSetter(this.#sim.interface.Autopilot.VerticalSpeed.get().then((val) => val / 100));
-    }
-
-    // FIXME: rest modes for position sync
-  }
-
-  #selectSmallEncoderMode(mode: EncoderSmallMode) {
-    this.#encoderSmallMode = mode;
-
-    console.log({ encoderSmallMode: EncoderSmallMode[this.#encoderSmallMode] });
-
-    if (this.#encoderSmallMode === EncoderSmallMode.HeadingBug) {
-      // << heading bug position
-      this.#encoderSmallSetter(this.#sim.interface.Avionics.HeadingBug.get());
-    } else if (this.#encoderSmallMode === EncoderSmallMode.OBS2) {
-      // << heading bug position
-      this.#encoderSmallSetter(this.#sim.interface.Navigation.Nav2.get().then((value) => -value));
-    } else if (this.#encoderSmallMode === EncoderSmallMode.GyroCompassAdjust) {
-      // << heading bug position
-      this.#encoderSmallSetter(this.#sim.interface.Avionics.DriftAdjust.get());
-    } else if (this.#encoderSmallMode === EncoderSmallMode.ADFHeading) {
-      // << heading bug position
-      this.#encoderSmallSetter(this.#sim.interface.Navigation.ADFHeading.get().then((value) => -value));
-    }
-
-    // FIXME: rest modes for position sync
   }
 }
