@@ -111,6 +111,7 @@ export class SimC172G430 {
       // https://www.siminnovations.com/xplane/command/?name=transponder&description=&submit=Search
 
       IDENT: this.#makeCommand("sim/transponder/transponder_ident"),
+      TEST: this.#makeCommand("sim/transponder/transponder_test"),
 
       ALT: this.#makeCommand("sim/transponder/transponder_alt"),
       ON: this.#makeCommand("sim/transponder/transponder_on"),

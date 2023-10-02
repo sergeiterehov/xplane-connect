@@ -508,7 +508,8 @@ export class AppC72G43 extends EventEmitter {
         } else if (button === Button.C3_R3) {
           // NOP
         } else if (button === Button.C3_R4) {
-          // TODO: Trans TEST
+          // Trans TEST
+          this.#sim.interface.Transponder.TEST();
         } else if (button === Button.C4_R1) {
           // Trans ALT
           this.#sim.interface.Transponder.ALT();
