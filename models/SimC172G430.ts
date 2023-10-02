@@ -194,7 +194,11 @@ export class SimC172G430 {
       Pitch: this.#makeDataRef("sim/joystick/yoke_pitch_ratio", "f"),
       Roll: this.#makeDataRef("sim/joystick/yoke_roll_ratio", "f"),
       Yaw: this.#makeDataRef("sim/joystick/yoke_heading_ratio", "f"),
-    }
+    },
+
+    HUD: {
+      OverrideJoystick: this.#makeDataRef("sim/operation/override/override_joystick", "f"),
+    },
   };
 
   constructor(xp: XPlane) {

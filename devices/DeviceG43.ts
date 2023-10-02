@@ -119,6 +119,7 @@ interface Events {
   log: [string];
 
   connected: [];
+  disconnected: [];
 
   big_encoder_rotate: [{ delta: number; position: number }];
   small_encoder_rotate: [{ delta: number; position: number }];
@@ -241,10 +242,12 @@ export class DeviceG43 extends EventEmitter {
     super();
 
     const baudRate = 115200;
+    const reconnectingInterval = 5000;
 
     this.#serial = new SerialPort({
       path,
       baudRate,
+      autoOpen: false,
     });
 
     this.#serial.on("open", () => {
@@ -253,10 +256,24 @@ export class DeviceG43 extends EventEmitter {
 
     this.#serial.on("error", (e) => {
       this.emit("log", `Serial port ${path} error: ${e}`);
+
+      setTimeout(() => this.#serial.open(), reconnectingInterval);
+    });
+    
+    this.#serial.on("close", () => {
+      this.emit("log", `Serial port closed. Reconnecting...`);
+      this.emit("disconnected");
+
+      setTimeout(() => this.#serial.open(), reconnectingInterval);
     });
 
     this.#parser = new ReadlineParser();
     this.#serial.pipe(this.#parser);
     this.#parser.on("data", this.#onMessage);
+
+    setTimeout(() => {
+      this.emit("log", `Trying serial port ${path}`);
+      this.#serial.open();
+    });
   }
 }

@@ -78,10 +78,16 @@ export class AppC72G43 extends EventEmitter {
     });
 
     this.#dev.on("connected", () => {
+      this.#sim.interface.HUD.OverrideJoystick.set(1);
+
       setTimeout(() => {
         this.#dev.call[Command.EnableAnalog]();
         this.#selectLayout(KeyboardLayout.Primary);
       }, 100);
+    });
+
+    this.#dev.on("disconnected", () => {
+      this.#sim.interface.HUD.OverrideJoystick.set(0);
     });
 
     this.#dev.on("button_click", ({ button }) => {
