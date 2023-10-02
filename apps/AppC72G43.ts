@@ -188,12 +188,12 @@ export class AppC72G43 extends EventEmitter {
       } else if (button === Button.C2_R3) {
         this.#selectAdjustLayout(KeyboardAdjustLayout.Light);
       } else if (button === Button.C2_R4) {
-        // NOP
+        // ?
       }
       // Each sub mode
       else if (this.#layoutAdjust === KeyboardAdjustLayout.Engine) {
         if (button === Button.Encoder) {
-          // NOP
+          // ?
         } else if (button === Button.C3_R1) {
           // magnetos off
           this.#sim.interface.Engine.MagnetosOff();
@@ -221,7 +221,7 @@ export class AppC72G43 extends EventEmitter {
         }
       } else if (this.#layoutAdjust === KeyboardAdjustLayout.Electro) {
         if (button === Button.Encoder) {
-          // NOP
+          // ?
         } else if (button === Button.C3_R1) {
           // toggle master alternate
           this.#sim.interface.Electrical.MasterAlternator();
@@ -235,17 +235,17 @@ export class AppC72G43 extends EventEmitter {
           // toggle bus 2
           this.#sim.interface.Electrical.Bus2();
         } else if (button === Button.C4_R1) {
-          // NOP
+          // ?
         } else if (button === Button.C4_R2) {
-          // NOP
+          // ?
         } else if (button === Button.C4_R3) {
-          // NOP
+          // ?
         } else if (button === Button.C4_R4) {
-          // NOP
+          // ?
         }
       } else if (this.#layoutAdjust === KeyboardAdjustLayout.Light) {
         if (button === Button.Encoder) {
-          // NOP
+          // ?
         } else if (button === Button.C3_R1) {
           // toggle navigation light
           this.#sim.interface.Light.Navigation();
@@ -256,22 +256,22 @@ export class AppC72G43 extends EventEmitter {
           // toggle landing light
           this.#sim.interface.Light.Landing();
         } else if (button === Button.C3_R4) {
-          // NOP
+          // ?
         } else if (button === Button.C4_R1) {
           // toggle beacon light
           this.#sim.interface.Light.Beacon();
         } else if (button === Button.C4_R2) {
-          // NOP
+          // ?
         } else if (button === Button.C4_R3) {
           // toggle strobe light
           this.#sim.interface.Light.Strobe();
         } else if (button === Button.C4_R4) {
-          // NOP
+          // ?
         }
       }
     } else if (this.#layout === KeyboardLayout.Adjust) {
       if (button === Button.Encoder) {
-        // NOP
+        // ?
       } else if (button === Button.C2_R1) {
         // flaps up
         this.#sim.interface.Flaps.Ratio.set(0);
@@ -311,7 +311,7 @@ export class AppC72G43 extends EventEmitter {
       }
     } else if (this.#layout === KeyboardLayout.ADF) {
       if (button === Button.Encoder) {
-        // NOP
+        // ?
       } else if (button === Button.C2_R1) {
         this.#selectBigEncoderMode(EncoderBigMode.None);
         this.#selectSmallEncoderMode(EncoderSmallMode.ADFHeading);
@@ -319,25 +319,30 @@ export class AppC72G43 extends EventEmitter {
         this.#selectBigEncoderMode(EncoderBigMode.ADFBig);
         this.#selectSmallEncoderMode(EncoderSmallMode.ADFSmall);
       } else if (button === Button.C2_R3) {
-        // TODO: ADF frequency flip
+        // ?
       } else if (button === Button.C2_R4) {
         // ?
       } else if (button === Button.C3_R1) {
-        // TODO: ADF toggle ADF
+        // ?
       } else if (button === Button.C3_R2) {
         // ?
       } else if (button === Button.C3_R3) {
         // ?
       } else if (button === Button.C3_R4) {
-        // ?
+        // ADF off
+        this.#sim.interface.Navigation.ADF.Off();
       } else if (button === Button.C4_R1) {
-        // TODO: ADF toggle BFO
+        // ADF frequency flip
+        this.#sim.interface.Navigation.ADF.FlipFrequency();
       } else if (button === Button.C4_R2) {
-        // ?
+        // ADF tone
+        this.#sim.interface.Navigation.ADF.Tone();
       } else if (button === Button.C4_R3) {
-        // ?
+        // ADF on
+        this.#sim.interface.Navigation.ADF.On();
       } else if (button === Button.C4_R4) {
-        // ?
+        // ADF antenna
+        this.#sim.interface.Navigation.ADF.Antenna();
       }
     } else if (this.#layout === KeyboardLayout.G530) {
       // Static buttons
@@ -363,7 +368,7 @@ export class AppC72G43 extends EventEmitter {
         } else if (button === Button.C3_R3) {
           // TODO: G530 VNAV
         } else if (button === Button.C3_R4) {
-          // NOP
+          // ?
         } else if (button === Button.C4_R1) {
           // TODO: G530 OBS
         } else if (button === Button.C4_R2) {
@@ -371,7 +376,7 @@ export class AppC72G43 extends EventEmitter {
         } else if (button === Button.C4_R3) {
           // TODO: G530 PROC
         } else if (button === Button.C4_R4) {
-          // NOP
+          // ?
         }
       } else if (this.#layoutGx30 === KeyboardGx30Layout.Right) {
         if (button === Button.Encoder) {
@@ -383,7 +388,7 @@ export class AppC72G43 extends EventEmitter {
         } else if (button === Button.C3_R3) {
           // TODO: G530 CLR
         } else if (button === Button.C3_R4) {
-          // NOP
+          // ?
         } else if (button === Button.C4_R1) {
           // TODO: G530 Range +
         } else if (button === Button.C4_R2) {
@@ -391,7 +396,7 @@ export class AppC72G43 extends EventEmitter {
         } else if (button === Button.C4_R3) {
           // TODO: G530 ENT
         } else if (button === Button.C4_R4) {
-          // NOP
+          // ?
         }
       }
     } else if (this.#layout === KeyboardLayout.G430) {
@@ -416,9 +421,9 @@ export class AppC72G43 extends EventEmitter {
         } else if (button === Button.C3_R2) {
           // TODO: G430 MSG
         } else if (button === Button.C3_R3) {
-          // NOP
+          // ?
         } else if (button === Button.C3_R4) {
-          // NOP
+          // ?
         } else if (button === Button.C4_R1) {
           // TODO: G430 OBS
         } else if (button === Button.C4_R2) {
@@ -426,7 +431,7 @@ export class AppC72G43 extends EventEmitter {
         } else if (button === Button.C4_R3) {
           // TODO: G430 PROC
         } else if (button === Button.C4_R4) {
-          // NOP
+          // ?
         }
       } else if (this.#layoutGx30 === KeyboardGx30Layout.Right) {
         if (button === Button.Encoder) {
@@ -438,7 +443,7 @@ export class AppC72G43 extends EventEmitter {
         } else if (button === Button.C3_R3) {
           // TODO: G430 CLR
         } else if (button === Button.C3_R4) {
-          // NOP
+          // ?
         } else if (button === Button.C4_R1) {
           // TODO: G430 Range +
         } else if (button === Button.C4_R2) {
@@ -446,19 +451,19 @@ export class AppC72G43 extends EventEmitter {
         } else if (button === Button.C4_R3) {
           // TODO: G430 ENT
         } else if (button === Button.C4_R4) {
-          // NOP
+          // ?
         }
       }
     } else if (this.#layout === KeyboardLayout.Autopilot) {
       if (button === Button.Encoder) {
-        // NOP
+        // ?
       } else if (button === Button.C2_R1) {
         // AP HDG
         this.#sim.interface.Autopilot.HDG();
       } else if (button === Button.C2_R2) {
-        // NOP
+        // ?
       } else if (button === Button.C2_R3) {
-        // NOP
+        // ?
       } else if (button === Button.C2_R4) {
         // disengage
         this.#sim.interface.Autopilot.Disengage();
@@ -466,11 +471,11 @@ export class AppC72G43 extends EventEmitter {
         // AP NAV
         this.#sim.interface.Autopilot.NAV();
       } else if (button === Button.C3_R2) {
-        // NOP
+        // ?
       } else if (button === Button.C3_R3) {
-        // NOP
+        // ?
       } else if (button === Button.C3_R4) {
-        // NOP
+        // ?
       } else if (button === Button.C4_R1) {
         // AP APR
         this.#sim.interface.Autopilot.APR();
@@ -488,7 +493,7 @@ export class AppC72G43 extends EventEmitter {
     } else if (this.#layout === KeyboardLayout.Transponder) {
       // Static buttons
       if (button === Button.Encoder) {
-        // NOP
+        // ?
       } else if (button === Button.C2_R1) {
         // Trans IDENT
         this.#sim.interface.Transponder.IDENT();
@@ -502,11 +507,11 @@ export class AppC72G43 extends EventEmitter {
       // Each sub mode
       else if (this.#layoutTransponder === KeyboardTransponderLayout.Mode) {
         if (button === Button.C3_R1) {
-          // NOP
+          // ?
         } else if (button === Button.C3_R2) {
-          // NOP
+          // ?
         } else if (button === Button.C3_R3) {
-          // NOP
+          // ?
         } else if (button === Button.C3_R4) {
           // Trans TEST
           this.#sim.interface.Transponder.TEST();
@@ -567,7 +572,7 @@ export class AppC72G43 extends EventEmitter {
     console.log({ encoderBigMode: EncoderBigMode[this.#encoderBigMode] });
 
     if (this.#encoderBigMode === EncoderBigMode.None) {
-      // NOP
+      // ?
     } else if (this.#encoderBigMode === EncoderBigMode.AltPressure) {
       // rotate alt pressure adjust
       this.#encoderBigProvider(
@@ -613,7 +618,7 @@ export class AppC72G43 extends EventEmitter {
     console.log({ encoderSmallMode: EncoderSmallMode[this.#encoderSmallMode] });
 
     if (this.#encoderSmallMode === EncoderSmallMode.None) {
-      // NOP
+      // ?
     } else if (this.#encoderSmallMode === EncoderSmallMode.HeadingBug) {
       // move heading bug
       this.#encoderSmallProvider(

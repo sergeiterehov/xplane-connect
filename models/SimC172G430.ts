@@ -91,6 +91,15 @@ export class SimC172G430 {
       ADFHeading: this.#makeDataRef("sim/cockpit2/radios/actuators/adf1_card_heading_deg_mag_pilot", "f"),
 
       ADFBearing: this.#makeReadonlyDataRef("sim/cockpit2/radios/indicators/adf1_relative_bearing_deg", "f"),
+
+      ADF: {
+        Mode: this.#makeDataRef("sim/cockpit2/radios/actuators/adf1_power", "f"),
+        FlipFrequency: this.#makeCommand("sim/radios/adf1_standy_flip"),
+        Off: this.#makeCommand("sim/radios/adf1_power_mode_0"),
+        Antenna: this.#makeCommand("sim/radios/adf1_power_mode_1"),
+        On: this.#makeCommand("sim/radios/adf1_power_mode_2"),
+        Tone: this.#makeCommand("sim/radios/adf1_power_mode_3"),
+      },
     },
 
     G430: {
