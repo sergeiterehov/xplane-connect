@@ -214,11 +214,13 @@ export class AppC72G43 extends EventEmitter {
           // toggle fuel pump
           this.#sim.interface.Engine.FuelPump();
         } else if (button === Button.C4_R3) {
-          // TODO: toggle tank selection
-          // Probably need state for this
+          // toggle tank selection
+          this.#sim.interface.Engine.TankSelector.get().then((value) => {
+            this.#sim.interface.Engine.TankSelector.set((value % 4) + 1);
+          });
         } else if (button === Button.C4_R4) {
-          // TODO: tank shutoff
-          // For what?
+          // fuel shutoff
+          this.#sim.interface.Engine.Shutoff();
         }
       } else if (this.#layoutAdjust === KeyboardAdjustLayout.Electro) {
         if (button === Button.Encoder) {
@@ -792,9 +794,6 @@ export class AppC72G43 extends EventEmitter {
     this.#layoutAdjust = layout;
 
     console.log({ layoutAdjust: KeyboardAdjustLayout[this.#layoutAdjust] });
-
-    this.#selectBigEncoderMode(EncoderBigMode.PitchAdjust);
-    this.#selectSmallEncoderMode(EncoderSmallMode.GyroCompassAdjust);
   }
 
   #selectGx30Layout(layout: KeyboardGx30Layout) {

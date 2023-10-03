@@ -228,7 +228,9 @@ export class SimC172G430 {
       MagnetosBoth: this.#makeCommand("sim/magnetos/magnetos_both"),
       Starter: this.#makeCommand("sim/starters/engage_starter_1"),
       FuelPump: this.#makeCommand("sim/fuel/fuel_pumps_tog"),
+      Shutoff: this.#makeCommand("sim/starters/shut_down"),
       Throttle: this.#makeDataRef("sim/multiplayer/controls/engine_throttle_request", "f"),
+      TankSelector: this.#makeDataRef("sim/cockpit/engine/fuel_tank_selector", "f"),
     },
 
     Light: {
