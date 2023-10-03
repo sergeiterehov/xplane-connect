@@ -93,12 +93,19 @@ export class SimC172G430 {
       ADFBearing: this.#makeReadonlyDataRef("sim/cockpit2/radios/indicators/adf1_relative_bearing_deg", "f"),
 
       ADF: {
+        StandbyFrequency: this.#makeDataRef("sim/cockpit2/radios/actuators/adf1_standby_frequency_hz", "f"),
         Mode: this.#makeDataRef("sim/cockpit2/radios/actuators/adf1_power", "f"),
+
         FlipFrequency: this.#makeCommand("sim/radios/adf1_standy_flip"),
         Off: this.#makeCommand("sim/radios/adf1_power_mode_0"),
         Antenna: this.#makeCommand("sim/radios/adf1_power_mode_1"),
         On: this.#makeCommand("sim/radios/adf1_power_mode_2"),
         Tone: this.#makeCommand("sim/radios/adf1_power_mode_3"),
+
+        SmallUp: this.#makeCommand("sim/radios/stby_adf1_ones_tens_up"),
+        SmallDown: this.#makeCommand("sim/radios/stby_adf1_ones_tens_down"),
+        BigUp: this.#makeCommand("sim/radios/stby_adf1_hundreds_thous_up"),
+        BigDown: this.#makeCommand("sim/radios/stby_adf1_hundreds_thous_down"),
       },
     },
 

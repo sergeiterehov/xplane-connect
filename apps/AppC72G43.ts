@@ -1,6 +1,7 @@
 import EventEmitter from "node:events";
 import { Button, Command, DeviceG43 } from "../devices/DeviceG43";
 import { SimC172G430 } from "../models/SimC172G430";
+import { makeStepperUpDown } from "../utils/stepper";
 
 enum KeyboardLayout {
   Primary = 10,
@@ -104,7 +105,7 @@ export class AppC72G43 extends EventEmitter {
       this.#sim.interface.HUD.OverrideJoystick.set(1);
 
       setTimeout(() => {
-        this.#dev.call[Command.EnableAnalog]();
+        // this.#dev.call[Command.EnableAnalog]();
         this.#selectLayout(KeyboardLayout.Primary);
       }, 100);
     });
@@ -592,7 +593,14 @@ export class AppC72G43 extends EventEmitter {
         (position) => this.#sim.interface.Navigation.Nav1.set(-position % 360),
       );
     } else if (this.#encoderBigMode === EncoderBigMode.ADFBig) {
-      // TODO: rotate ADF big
+      // rotate ADF big
+      this.#encoderBigProvider(
+        () => Promise.resolve(0),
+        makeStepperUpDown(
+          () => this.#sim.interface.Navigation.ADF.BigUp(),
+          () => this.#sim.interface.Navigation.ADF.BigDown(),
+        ),
+      );
     } else if (this.#encoderBigMode === EncoderBigMode.G530LeftBig) {
       // TODO: rotate G530 left big
     } else if (this.#encoderBigMode === EncoderBigMode.G530RightBig) {
@@ -644,7 +652,14 @@ export class AppC72G43 extends EventEmitter {
         (position) => this.#sim.interface.Navigation.ADFHeading.set(-position % 360),
       );
     } else if (this.#encoderSmallMode === EncoderSmallMode.ADFSmall) {
-      // TODO: rotate ADF small
+      // rotate ADF small
+      this.#encoderSmallProvider(
+        () => Promise.resolve(0),
+        makeStepperUpDown(
+          () => this.#sim.interface.Navigation.ADF.SmallUp(),
+          () => this.#sim.interface.Navigation.ADF.SmallDown(),
+        ),
+      );
     } else if (this.#encoderSmallMode === EncoderSmallMode.G530LeftSmall) {
       // TODO: rotate G530 left small
     } else if (this.#encoderSmallMode === EncoderSmallMode.G530RightSmall) {
