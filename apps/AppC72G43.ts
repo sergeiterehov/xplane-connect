@@ -348,9 +348,11 @@ export class AppC72G43 extends EventEmitter {
     } else if (this.#layout === KeyboardLayout.G530) {
       // Static buttons
       if (button === Button.C2_R1) {
-        // TODO: G530 flip COM frequency
+        // G530 flip COM frequency
+        this.#sim.interface.G530.CFlip();
       } else if (button === Button.C2_R2) {
-        // TODO: G530 flip NAV frequency
+        // G530 flip NAV frequency
+        this.#sim.interface.G530.VFlip();
       }
       // Sub mode selection
       else if (button === Button.C2_R3) {
@@ -361,41 +363,55 @@ export class AppC72G43 extends EventEmitter {
       // Each sub mode
       else if (this.#layoutGx30 === KeyboardGx30Layout.Left) {
         if (button === Button.Encoder) {
-          // TODO: G540 left knob
+          // G540 left knob
+          this.#sim.interface.G530.LeftClick();
         } else if (button === Button.C3_R1) {
-          // TODO: G530 SDI
+          // G530 CDI
+          this.#sim.interface.G530.CDI();
         } else if (button === Button.C3_R2) {
-          // TODO: G530 MSG
+          // G530 MSG
+          this.#sim.interface.G530.MSG();
         } else if (button === Button.C3_R3) {
-          // TODO: G530 VNAV
+          // G530 VNAV
+          this.#sim.interface.G530.VNAV();
         } else if (button === Button.C3_R4) {
           // ?
         } else if (button === Button.C4_R1) {
-          // TODO: G530 OBS
+          // G530 OBS
+          this.#sim.interface.G530.OBS();
         } else if (button === Button.C4_R2) {
-          // TODO: G530 FPL
+          // G530 FPL
+          this.#sim.interface.G530.FPL();
         } else if (button === Button.C4_R3) {
-          // TODO: G530 PROC
+          // G530 PROC
+          this.#sim.interface.G530.PROC();
         } else if (button === Button.C4_R4) {
           // ?
         }
       } else if (this.#layoutGx30 === KeyboardGx30Layout.Right) {
         if (button === Button.Encoder) {
-          // TODO: G530 right knob
+          // G530 right knob
+          this.#sim.interface.G530.RightClick();
         } else if (button === Button.C3_R1) {
-          // TODO: G530 Range -
+          // G530 Range -
+          this.#sim.interface.G530.RangeOut();
         } else if (button === Button.C3_R2) {
-          // TODO: G530 Direct
+          // G530 Direct
+          this.#sim.interface.G530.Direct();
         } else if (button === Button.C3_R3) {
-          // TODO: G530 CLR
+          // G530 CLR
+          this.#sim.interface.G530.CLR();
         } else if (button === Button.C3_R4) {
           // ?
         } else if (button === Button.C4_R1) {
-          // TODO: G530 Range +
+          // G530 Range +
+          this.#sim.interface.G530.RangeIn();
         } else if (button === Button.C4_R2) {
-          // TODO: G530 Menu
+          // G530 Menu
+          this.#sim.interface.G530.MENU();
         } else if (button === Button.C4_R3) {
-          // TODO: G530 ENT
+          // G530 ENT
+          this.#sim.interface.G530.ENT();
         } else if (button === Button.C4_R4) {
           // ?
         }
@@ -403,9 +419,11 @@ export class AppC72G43 extends EventEmitter {
     } else if (this.#layout === KeyboardLayout.G430) {
       // Static buttons
       if (button === Button.C2_R1) {
-        // TODO: G430 flip COM frequency
+        // G430 flip COM frequency
+        this.#sim.interface.G430.CFlip();
       } else if (button === Button.C2_R2) {
-        // TODO: G430 flip NAV frequency
+        // G430 flip NAV frequency
+        this.#sim.interface.G430.VFlip();
       }
       // Sub mode selection
       else if (button === Button.C2_R3) {
@@ -416,41 +434,54 @@ export class AppC72G43 extends EventEmitter {
       // Each sub mode
       else if (this.#layoutGx30 === KeyboardGx30Layout.Left) {
         if (button === Button.Encoder) {
-          // TODO: G430 left knob
+          // G440 left knob
+          this.#sim.interface.G430.LeftClick();
         } else if (button === Button.C3_R1) {
-          // TODO: G430 SDI
+          // G430 CDI
+          this.#sim.interface.G430.CDI();
         } else if (button === Button.C3_R2) {
-          // TODO: G430 MSG
+          // G430 MSG
+          this.#sim.interface.G430.MSG();
         } else if (button === Button.C3_R3) {
-          // ?
+          // G430 VNAV not exists
         } else if (button === Button.C3_R4) {
           // ?
         } else if (button === Button.C4_R1) {
-          // TODO: G430 OBS
+          // G430 OBS
+          this.#sim.interface.G430.OBS();
         } else if (button === Button.C4_R2) {
-          // TODO: G430 FPL
+          // G430 FPL
+          this.#sim.interface.G430.FPL();
         } else if (button === Button.C4_R3) {
-          // TODO: G430 PROC
+          // G430 PROC
+          this.#sim.interface.G430.PROC();
         } else if (button === Button.C4_R4) {
           // ?
         }
       } else if (this.#layoutGx30 === KeyboardGx30Layout.Right) {
         if (button === Button.Encoder) {
-          // TODO: G430 right knob
+          // G430 right knob
+          this.#sim.interface.G430.RightClick();
         } else if (button === Button.C3_R1) {
-          // TODO: G430 Range -
+          // G430 Range -
+          this.#sim.interface.G430.RangeOut();
         } else if (button === Button.C3_R2) {
-          // TODO: G430 Direct
+          // G430 Direct
+          this.#sim.interface.G430.Direct();
         } else if (button === Button.C3_R3) {
-          // TODO: G430 CLR
+          // G430 CLR
+          this.#sim.interface.G430.CLR();
         } else if (button === Button.C3_R4) {
           // ?
         } else if (button === Button.C4_R1) {
-          // TODO: G430 Range +
+          // G430 Range +
+          this.#sim.interface.G430.RangeIn();
         } else if (button === Button.C4_R2) {
-          // TODO: G430 Menu
+          // G430 Menu
+          this.#sim.interface.G430.MENU();
         } else if (button === Button.C4_R3) {
-          // TODO: G430 ENT
+          // G430 ENT
+          this.#sim.interface.G430.ENT();
         } else if (button === Button.C4_R4) {
           // ?
         }
@@ -602,13 +633,41 @@ export class AppC72G43 extends EventEmitter {
         ),
       );
     } else if (this.#encoderBigMode === EncoderBigMode.G530LeftBig) {
-      // TODO: rotate G530 left big
+      // rotate G530 left big
+      this.#encoderBigProvider(
+        () => Promise.resolve(0),
+        makeStepperUpDown(
+          () => this.#sim.interface.G530.LeftBigUp(),
+          () => this.#sim.interface.G530.LeftBigDown(),
+        ),
+      );
     } else if (this.#encoderBigMode === EncoderBigMode.G530RightBig) {
-      // TODO: rotate G530 right big
+      // rotate G530 right big
+      this.#encoderBigProvider(
+        () => Promise.resolve(0),
+        makeStepperUpDown(
+          () => this.#sim.interface.G530.RightBigUp(),
+          () => this.#sim.interface.G530.RightBigDown(),
+        ),
+      );
     } else if (this.#encoderBigMode === EncoderBigMode.G430LeftBig) {
-      // TODO: rotate G430 left big
+      // rotate G430 left big
+      this.#encoderBigProvider(
+        () => Promise.resolve(0),
+        makeStepperUpDown(
+          () => this.#sim.interface.G430.LeftBigUp(),
+          () => this.#sim.interface.G430.LeftBigDown(),
+        ),
+      );
     } else if (this.#encoderBigMode === EncoderBigMode.G430RightBig) {
-      // TODO: rotate G430 right big
+      // rotate G430 right big
+      this.#encoderBigProvider(
+        () => Promise.resolve(0),
+        makeStepperUpDown(
+          () => this.#sim.interface.G430.RightBigUp(),
+          () => this.#sim.interface.G430.RightBigDown(),
+        ),
+      );
     } else if (this.#encoderBigMode === EncoderBigMode.Autopilot) {
       // rotate ap vs
       this.#encoderBigProvider(
@@ -661,13 +720,41 @@ export class AppC72G43 extends EventEmitter {
         ),
       );
     } else if (this.#encoderSmallMode === EncoderSmallMode.G530LeftSmall) {
-      // TODO: rotate G530 left small
+      // rotate G530 left small
+      this.#encoderSmallProvider(
+        () => Promise.resolve(0),
+        makeStepperUpDown(
+          () => this.#sim.interface.G530.LeftSmallUp(),
+          () => this.#sim.interface.G530.LeftSmallDown(),
+        ),
+      );
     } else if (this.#encoderSmallMode === EncoderSmallMode.G530RightSmall) {
-      // TODO: rotate G530 right small
+      // rotate G530 right small
+      this.#encoderSmallProvider(
+        () => Promise.resolve(0),
+        makeStepperUpDown(
+          () => this.#sim.interface.G530.RightSmallUp(),
+          () => this.#sim.interface.G530.RightSmallDown(),
+        ),
+      );
     } else if (this.#encoderSmallMode === EncoderSmallMode.G430LeftSmall) {
-      // TODO: rotate G430 left small
+      // rotate G430 left small
+      this.#encoderSmallProvider(
+        () => Promise.resolve(0),
+        makeStepperUpDown(
+          () => this.#sim.interface.G430.LeftSmallUp(),
+          () => this.#sim.interface.G430.LeftSmallDown(),
+        ),
+      );
     } else if (this.#encoderSmallMode === EncoderSmallMode.G430RightSmall) {
-      // TODO: rotate G430 right small
+      // rotate G430 right small
+      this.#encoderSmallProvider(
+        () => Promise.resolve(0),
+        makeStepperUpDown(
+          () => this.#sim.interface.G430.RightSmallUp(),
+          () => this.#sim.interface.G430.RightSmallDown(),
+        ),
+      );
     } else {
       this.#smallEncoderReader = undefined;
     }

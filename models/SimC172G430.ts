@@ -109,18 +109,69 @@ export class SimC172G430 {
       },
     },
 
-    G430: {
+    G530: {
       // https://www.siminnovations.com/xplane/command/?name=g430&description=&submit=Search
-      // G430: n1 - 530, n2 - 430
 
       CFlip: this.#makeCommand("sim/GPS/g430n1_com_ff"),
       VFlip: this.#makeCommand("sim/GPS/g430n1_nav_ff"),
 
       LeftClick: this.#makeCommand("sim/GPS/g430n1_nav_com_tog"),
-      LeftBigClock: this.#makeCommand("sim/GPS/g430n1_coarse_up"),
-      LeftBigCounterClock: this.#makeCommand("sim/GPS/g430n1_coarse_down"),
-      LeftSmallClock: this.#makeCommand("sim/GPS/g430n1_fine_up"),
-      LeftSmallCounterClock: this.#makeCommand("sim/GPS/g430n1_fine_down"),
+      LeftBigUp: this.#makeCommand("sim/GPS/g430n1_coarse_up"),
+      LeftBigDown: this.#makeCommand("sim/GPS/g430n1_coarse_down"),
+      LeftSmallUp: this.#makeCommand("sim/GPS/g430n1_fine_up"),
+      LeftSmallDown: this.#makeCommand("sim/GPS/g430n1_fine_down"),
+
+      RightClick: this.#makeCommand("sim/GPS/g430n1_cursor"),
+      RightBigUp: this.#makeCommand("sim/GPS/g430n1_chapter_up"),
+      RightBigDown: this.#makeCommand("sim/GPS/g430n1_chapter_dn"),
+      RightSmallUp: this.#makeCommand("sim/GPS/g430n1_page_up"),
+      RightSmallDown: this.#makeCommand("sim/GPS/g430n1_page_dn"),
+
+      CDI: this.#makeCommand("sim/GPS/g430n1_cdi"),
+      OBS: this.#makeCommand("sim/GPS/g430n1_obs"),
+      MSG: this.#makeCommand("sim/GPS/g430n1_msg"),
+      FPL: this.#makeCommand("sim/GPS/g430n1_fpl"),
+      VNAV: this.#makeCommand("sim/GPS/g430n1_vnav"),
+      PROC: this.#makeCommand("sim/GPS/g430n1_proc"),
+
+      RangeIn: this.#makeCommand("sim/GPS/g430n1_zoom_in"),
+      RangeOut: this.#makeCommand("sim/GPS/g430n1_zoom_out"),
+      Direct: this.#makeCommand("sim/GPS/g430n1_direct"),
+      MENU: this.#makeCommand("sim/GPS/g430n1_menu"),
+      CLR: this.#makeCommand("sim/GPS/g430n1_clr"),
+      ENT: this.#makeCommand("sim/GPS/g430n1_ent"),
+    },
+
+    G430: {
+      // https://www.siminnovations.com/xplane/command/?name=g430&description=&submit=Search
+
+      CFlip: this.#makeCommand("sim/GPS/g430n2_com_ff"),
+      VFlip: this.#makeCommand("sim/GPS/g430n2_nav_ff"),
+
+      LeftClick: this.#makeCommand("sim/GPS/g430n2_nav_com_tog"),
+      LeftBigUp: this.#makeCommand("sim/GPS/g430n2_coarse_up"),
+      LeftBigDown: this.#makeCommand("sim/GPS/g430n2_coarse_down"),
+      LeftSmallUp: this.#makeCommand("sim/GPS/g430n2_fine_up"),
+      LeftSmallDown: this.#makeCommand("sim/GPS/g430n2_fine_down"),
+
+      RightClick: this.#makeCommand("sim/GPS/g430n2_cursor"),
+      RightBigUp: this.#makeCommand("sim/GPS/g430n2_chapter_up"),
+      RightBigDown: this.#makeCommand("sim/GPS/g430n2_chapter_dn"),
+      RightSmallUp: this.#makeCommand("sim/GPS/g430n2_page_up"),
+      RightSmallDown: this.#makeCommand("sim/GPS/g430n2_page_dn"),
+
+      CDI: this.#makeCommand("sim/GPS/g430n2_cdi"),
+      OBS: this.#makeCommand("sim/GPS/g430n2_obs"),
+      MSG: this.#makeCommand("sim/GPS/g430n2_msg"),
+      FPL: this.#makeCommand("sim/GPS/g430n2_fpl"),
+      PROC: this.#makeCommand("sim/GPS/g430n2_proc"),
+
+      RangeIn: this.#makeCommand("sim/GPS/g430n2_zoom_in"),
+      RangeOut: this.#makeCommand("sim/GPS/g430n2_zoom_out"),
+      Direct: this.#makeCommand("sim/GPS/g430n2_direct"),
+      MENU: this.#makeCommand("sim/GPS/g430n2_menu"),
+      CLR: this.#makeCommand("sim/GPS/g430n2_clr"),
+      ENT: this.#makeCommand("sim/GPS/g430n2_ent"),
     },
 
     Transponder: {

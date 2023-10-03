@@ -1,28 +1,11 @@
-export const makeStepper = (fn: (steps: number) => any, initial = 0) => {
-  let prev = initial;
-
-  return (position: number) => {
-    const delta = position - prev;
-    const steps = Math.floor(delta);
-
-    prev = position - (delta - steps);
-
-    if (steps !== 0) {
-      fn(steps);
-    }
-  };
-};
-
 export const makeStepperUpDown = (up: () => any, down: () => any, initial = 0) => {
   let prev = initial;
 
   return (position: number) => {
-    const delta = position - prev;
-    const steps = Math.imul(delta, 1);
+    const next = Math.imul(position, 1);
+    const steps = Math.imul(next - prev, 1);
 
-    console.log({ position, prev, steps });
-
-    prev = position - (delta - steps);
+    prev = next;
 
     if (steps !== 0) {
       const fn = steps > 0 ? up : down;
