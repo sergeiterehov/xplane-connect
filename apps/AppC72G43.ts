@@ -105,7 +105,7 @@ export class AppC72G43 extends EventEmitter {
       this.#sim.interface.HUD.OverrideJoystick.set(1);
 
       setTimeout(() => {
-        // this.#dev.call[Command.EnableAnalog]();
+        this.#dev.call[Command.EnableAnalog]();
         this.#selectLayout(KeyboardLayout.Primary);
       }, 100);
     });
@@ -136,15 +136,16 @@ export class AppC72G43 extends EventEmitter {
       this.#handleLeftResistor(position);
     });
 
-    this.#dev.on("axis", ({ x, y }) => {
-      this.#handleAxis(x, y);
+    this.#dev.on("axis", ({ x, y, z }) => {
+      this.#handleAxis(x, y, z);
     });
   }
 
-  #handleAxis(x: number, y: number) {
-    // pitch & roll
+  #handleAxis(x: number, y: number, z: number) {
+    // pitch + roll + yaw
     this.#sim.interface.Control.Roll.set(x);
     this.#sim.interface.Control.Pitch.set(y);
+    this.#sim.interface.Control.Yaw.set(z);
   }
 
   #handleLeftResistor(position: number) {

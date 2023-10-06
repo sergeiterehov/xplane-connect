@@ -111,6 +111,7 @@ const messageDescriptions: {
     data: [
       { name: "x", type: Number },
       { name: "y", type: Number },
+      { name: "z", type: Number },
     ],
   },
 };
@@ -126,7 +127,7 @@ interface Events {
   button_click: [{ button: Button }];
   button_long_click: [{ button: Button }];
   left_resistor: [{ position: number }];
-  axis: [{ x: number; y: number }];
+  axis: [{ x: number; y: number; z: number }];
 }
 
 export declare interface DeviceG43 {
@@ -218,8 +219,8 @@ export class DeviceG43 extends EventEmitter {
     [Message.ResistorLeft]: (e: { position: number; prevPosition: number }) => {
       this.emit("left_resistor", { position: e.position });
     },
-    [Message.Axis]: (e: { x: number; y: number }) => {
-      this.emit("axis", { x: e.x, y: e.y });
+    [Message.Axis]: (e: { x: number; y: number; z: number }) => {
+      this.emit("axis", { x: e.x, y: e.y, z: e.z });
     },
   };
 
@@ -259,7 +260,7 @@ export class DeviceG43 extends EventEmitter {
 
       setTimeout(() => this.#serial.open(), reconnectingInterval);
     });
-    
+
     this.#serial.on("close", () => {
       this.emit("log", `Serial port closed. Reconnecting...`);
       this.emit("disconnected");

@@ -19,6 +19,7 @@
 #define KB_COL_4 28
 
 #define LEFT_RESISTOR A0
+#define Z_RESISTOR A3
 
 #define AXIS_X A2
 #define AXIS_Y A1
@@ -74,6 +75,7 @@ struct State
 
   int x;
   int y;
+  int z;
 
   /** [row][col] */
   bool kbOnShortPress[4][4];
@@ -318,9 +320,11 @@ void processAxis()
 {
   int x = analogRead(AXIS_X);
   int y = analogRead(AXIS_Y);
+  int z = analogRead(Z_RESISTOR);
 
-  state.x = -(x - 511) >> 2;
-  state.y = (y - 511) >> 2;
+  state.x = (x - 511) >> 2;
+  state.y = -(y - 511) >> 2;
+  state.z = (z - 511) >> 2;
 }
 
 void setup()
@@ -353,6 +357,7 @@ void setup()
 
   pinMode(AXIS_X, INPUT);
   pinMode(AXIS_Y, INPUT);
+  pinMode(Z_RESISTOR, INPUT);
 
   pinMode(KB_ROW_1, OUTPUT);
   pinMode(KB_ROW_2, OUTPUT);
@@ -389,13 +394,15 @@ void loop()
   processSmallEncoderButton();
   processKeyboard();
 
-  if (state.x != statePrev.x || state.y != statePrev.y)
+  if (state.x != statePrev.x || state.y != statePrev.y || state.z != statePrev.z)
   {
     Serial.print(Axis);
     Serial.print('\t');
     Serial.print(state.x / 128.0);
     Serial.print('\t');
-    Serial.println(state.y / 128.0);
+    Serial.print(state.y / 128.0);
+    Serial.print('\t');
+    Serial.println(state.z / 128.0);
   }
 
   if (state.leftResistor != statePrev.leftResistor)
